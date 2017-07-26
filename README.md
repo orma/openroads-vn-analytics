@@ -1,4 +1,4 @@
-# Openroads VN Analytics
+# OpenRoads Vietnam Analytics
 [![Build Status](https://travis-ci.org/orma/openroads-vn-analytics.svg?branch=develop)](https://travis-ci.org/orma/openroads-vn-analytics)
 
 ## Development environment

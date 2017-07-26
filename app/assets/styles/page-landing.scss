@@ -1,28 +1,24 @@
 .page--landing {
   .site-header {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    z-index: 100;
     .site {
       &__title {
         @extend .visually-hidden;
       }
+
       &__nav {
-        float: right;
+        float: none;
+        display: block;
+        margin: 0 auto;
+        overflow: hidden;
 
         .menu-wrapper {
-          @include col(12/12);
-          float: right;
           overflow: auto;
           visibility: visible;
           opacity: 1;
           max-height: 600rem;
-          text-align: right;
         }
 
         .global-menu {
-          float: right;
           > li {
             float: left;
             margin: 0 ($global-padding / 2) 0 0;
@@ -43,42 +39,77 @@
 
   .page {
     &__header--landing {
+      @extend .antialiased;
       text-align: center;
-      padding-top: 8rem;
-      padding-bottom: 4rem;
-      background: url(../graphics/layout/background_map.png);
+      background: url(../graphics/layout/hero-bg.png);
       background-size: cover;
       position: relative;
+      padding: 6rem 0;
+
       @include media(small-up) {
-        padding-top: 10rem;
-        padding-bottom: 5rem;
+        padding: 10rem 0;
       }
     }
+
     &__headline--landing {
       position: relative;
       z-index: 10;
       color: #fff;
     }
+
     &__title--landing {
+      position: relative;
+      margin-bottom: 1.25rem;
+
       img {
         width: auto;
         height: 2rem;
+
         @include media(small-up) {
-          height: 3rem;
+          height: 4rem;
         }
       }
 
       span {
         @extend .visually-hidden;
       }
+
+      strong {
+        position: absolute;
+        top: -0.75rem;
+        left: 50%;
+        display: inline-block;
+        font-size: 1rem;
+        text-transform: uppercase;
+        padding: 0 0.75rem;
+        background: rgba($primary-color, 0.64);
+        border-radius: $global-radius;
+        transform: translate(-50%, -100%);
+
+        @include media(medium-up) {
+          font-size: 1.5rem;
+        }
+      }
+
+      @include media(medium-up) {
+        margin-bottom: 2rem;
+      }
     }
+
     &__description--landing {
       width: 100%;
-      max-width: 30rem;
+      
       padding: 0 $global-padding;
       margin: 0 auto;
       font-weight: $base-font-bold;
+      font-size: 1rem;
+
+      @include media(medium-up) {
+        font-size: 1.5rem;
+        max-width: 48rem;
+      }
     }
+
     &__body--landing {
       text-align: center;
       padding: 3rem 0;

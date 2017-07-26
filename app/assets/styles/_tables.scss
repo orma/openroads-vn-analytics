@@ -45,7 +45,7 @@
           color: $info-color;
         }
         &.not-added {
-          color: $alert-color;
+          color: rgba($base-color, 0.64);
         }
       }
     }

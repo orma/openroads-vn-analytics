@@ -62,7 +62,7 @@ var SiteHeader = React.createClass({
       <header className='site-header'>
         <div className='inner'>
           <div className='site__headline'>
-            <h1 className='site__title'><Link to='/'><img src='assets/graphics/layout/or-logo.png' width='500' height='63' alt='Open Roads logo' /><span>Open Roads Analytics</span></Link></h1>
+            <h1 className='site__title'><Link to='/'><img src='assets/graphics/layout/openroads-vn-logo-hor-neg.svg' width='736' height='96' alt='OpenRoads Vietnam logo' /><span>OpenRoads</span> <strong>Vietnam</strong></Link></h1>
           </div>
 
           <nav className='site__nav' role='navigation' ref='nav'>
@@ -85,8 +85,7 @@ var SiteHeader = React.createClass({
             <div className='menu-wrapper'>
               <ul className='global-menu' id='global-menu'>
                 <li><Link to='/analytics' className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}><span>Analytics</span></Link></li>
-                <li><Link to='/editor' className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}><span>Map</span></Link></li>
-                <li><Link to='/about' className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}><span>About</span></Link></li>
+                <li><Link to='/editor' className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}><span>Editor</span></Link></li>
               </ul>
             </div>
           </nav>

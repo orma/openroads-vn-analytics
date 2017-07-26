@@ -10,8 +10,8 @@ var Home = React.createClass({
       <section>
         <header className='page__header--landing'>
           <div className='page__headline--landing'>
-            <h1 className='page__title--landing'><img src='assets/graphics/layout/or-logo.png' width='500' height='63' alt='Open Roads logo' /><span>Welcome</span></h1>
-            <p className='page__description--landing'>Mapping, tracking and visualizing road projects in Vietnam for inclusive growth</p>
+            <h1 className='page__title--landing'><img src='assets/graphics/layout/openroads-vn-logo-hor-neg.svg' width='736' height='96' alt='OpenRoads Vietnam logo' /><span>OpenRoads</span> <strong>Vietnam</strong></h1>
+            <p className='page__description--landing'>Mapping, tracking and visualizing road projects in Vietnam for inclusive growth.</p>
           </div>
         </header>
 
@@ -20,7 +20,7 @@ var Home = React.createClass({
             <h2>Access and improve Road Networks</h2>
             <p className='description'></p>
             <p className='description'>Work with the OpenRoads project to close this critical information gap and create a comprehensive road network map of Vietnam.</p>
-            <Link to='/analytics' className='bttn-explore'>Explore more</Link>
+            <Link to='/analytics' className='bttn-explore'>Explore</Link>
           </div>
         </div>
       </section>

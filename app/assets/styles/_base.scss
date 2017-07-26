@@ -171,11 +171,16 @@ a:active{
    ========================================================================== */
 
 .site-header {
+  @extend .antialiased;
   background: $primary-color;
   color: #fff;
   padding: 0.8rem 0 0.7rem;
   position: relative;
   z-index: 99999;
+
+  a {
+    color: inherit;
+  }
 
   > .inner {
     @extend .row;
@@ -184,39 +189,57 @@ a:active{
 
   .site {
     &__headline {
-      @include col(4/12);
-      * {
-        vertical-align: middle;
-        display: inline-block;
-      }
+      float: left;
+      line-height: 1.25rem;
+      padding: 0.325rem 0;
 
-      .site__title {
-        margin: 0;
-        padding: 0.25rem 0;
-        line-height: 1rem;
+      * {
+        vertical-align: top;
+        display: inline-block;
       }
 
       img {
         width: auto;
         height: 1.25rem;
       }
+
       span {
         @extend .visually-hidden;
       }
     }
 
+    &__title {
+      margin: 0;
+
+      strong {
+        display: inline-block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        padding: 0 0.25rem;
+        background: rgba($secondary-color, 0.64);
+        border-radius: $global-radius;
+        margin-left: 0.5rem;
+        line-height: 1.25rem;
+      }
+    }
+
     /* Main navigation */
     &__nav {
-      @include col(12/12);
+      float: left;
+      clear: both;
+      text-align: center;
+      margin-top: 1rem;
+      white-space: nowrap;
 
       &.show-menu,
       &.show-search {
         margin-top: 1rem;
       }
-      @include media(large-up) {
-        @include col(8/12);
-        // margin-top: -0.5rem;
-        // margin-bottom: -0.5rem;
+
+      @include media(medium-up) {
+        float: right;
+        margin-top: 0;
+        clear: none;
       }
 
       // vv Menu
@@ -244,33 +267,20 @@ a:active{
         @include media(small-up) {
           right: $global-padding * 2;
         }
+
         @include media(large-up) {
           display: none;
         }
       }
 
       .menu-wrapper {
+        display: inline-block;
+        vertical-align: top;
         overflow: hidden;
         visibility: hidden;
         opacity: 0;
         max-height: 0;
         transition: opacity 0.16s ease 0s, max-height 0.16s ease 0s, visibility 0.16s linear 0s;
-        @include media(large-up) {
-          @include col(4/8);
-          display: block;
-          overflow: auto;
-          visibility: visible;
-          opacity: 1;
-          max-height: 600rem;
-          text-align: right;
-        }
-      }
-      &.show-menu .menu-wrapper {
-        display: block;
-        overflow: auto;
-        visibility: visible;
-        opacity: 1;
-        max-height: 600rem;
       }
 
       .global-menu {
@@ -279,14 +289,13 @@ a:active{
         list-style: none;
         margin: 0;
         padding: 0;
-        @include media(large-up) {
-          float: right;
-          > li {
-            float: left;
-            margin: 0 ($global-padding / 2) 0 0;
-            &:last-child {
-              margin-right: 0;
-            }
+
+        > li {
+          margin: 0 ($global-padding / 2) 0 0;
+          float: left;
+
+          &:last-child {
+            margin-right: 0;
           }
         }
       }
