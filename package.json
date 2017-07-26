@@ -96,6 +96,7 @@
     "redux": "^3.2.1",
     "redux-logger": "^3.0.1",
     "redux-thunk": "^1.0.3",
+    "request-promise": "^4.2.1",
     "titlecase": "^1.1.2"
   }
 }
