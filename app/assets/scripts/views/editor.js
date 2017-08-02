@@ -41,13 +41,11 @@ var Editor = React.createClass({
       switch (e.data.id) {
         case 'or-editor':
           var hash = this.cleanUrl(e.data.url, config.editorUrl);
-          this.props.dispatch(replace(`/editor/${hash}`));
           break;
       }
     } else if (e.data.type === 'navigate') {
       switch (e.data.id) {
         case 'or-editor':
-          this.props.dispatch(push(e.data.url));
           break;
       }
     }
