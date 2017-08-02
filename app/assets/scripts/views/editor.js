@@ -1,7 +1,6 @@
 'use strict';
 import React from 'react';
 import { connect } from 'react-redux';
-import { push, replace } from 'react-router-redux';
 import config from '../config';
 
 var Editor = React.createClass({
@@ -40,7 +39,7 @@ var Editor = React.createClass({
     if (e.data.type === 'urlchange') {
       switch (e.data.id) {
         case 'or-editor':
-          var hash = this.cleanUrl(e.data.url, config.editorUrl);
+          // logic from current editor-id-swithc branch will go here
           break;
       }
     } else if (e.data.type === 'navigate') {
