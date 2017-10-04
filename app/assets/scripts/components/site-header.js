@@ -108,7 +108,7 @@ var SiteHeader = React.createClass({
             <div className='menu-wrapper'>
               <ul className='global-menu' id='global-menu'>
                 <li>
-                  <Link to={`/${getLanguage()}/analytics`} className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}>
+                  <Link to={`/${getLanguage()}/analytics/main`} className='global-menu-item' activeClassName='global-menu-item--active' onClick={this.menuClickHandler}>
                     <span>{t('Analytics')}</span>
                   </Link>
                 </li>
