@@ -21,7 +21,7 @@ var Home = React.createClass({
             <h2>{t('Access and improve Road Networks')}</h2>
             <p className='description'></p>
             <p className='description'>{t('Work with the OpenRoads project to close this critical information gap and create a comprehensive road network map of Vietnam.')}</p>
-            <Link to={`/${getLanguage()}/analytics`} className='bttn-explore'>{t('View analytics')}</Link>
+            <Link to={`/${getLanguage()}/analytics/main`} className='bttn-explore'>{t('View analytics')}</Link>
             <Link to={`/${getLanguage()}/explore`} className='bttn-explore'>{t('Explore on map')}</Link>
           </div>
         </div>
