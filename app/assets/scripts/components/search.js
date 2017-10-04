@@ -203,7 +203,7 @@ var Search = React.createClass({
   },
 
   searchBar: function () {
-    const searchPlaceHolder = this.props.searchType === 'Admin' ? 'Search by Administrative Area' : 'Search by VProMMs ID';
+    const searchPlaceHolder = this.props.searchType === 'Admin' ? 'Search by Admin Area' : 'Search by VProMMs ID';
     return (
       <div className='input-group'>
         <input type='search' className='form-control input-search'
