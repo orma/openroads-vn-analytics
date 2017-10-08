@@ -40,7 +40,7 @@ var AnalyticsAA = React.createClass({
       <ul className='a-children'>
         {children.map((child, i) => {
           return (
-            <li><Link onClick={(e) => { this.props._fetchAdminChildren(child.id); } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link></li>
+            <li key={child.id}><Link onClick={(e) => { this.props._fetchAdminChildren(child.id); } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link></li>
           );
         })}
       </ul>
