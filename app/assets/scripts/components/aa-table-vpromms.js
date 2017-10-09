@@ -106,7 +106,11 @@ const AATable = React.createClass({
   // 2. to a road data dump in the last column
   renderVProMMsLink: function (id) {
     return (
-      <Link to={`/${getLanguage()}/explore`} onClick={(e) => { this.props._fetchVProMMsBbox(id); } }><strong>{id}</strong></Link>
+      <Link to={`/${getLanguage()}/explore`} onClick={(e) => { 
+        this.props._removeVProMMsidsProperties();
+        this.props._removeAdminInfo();
+        this.props._fetchVProMMsBbox(id); 
+        } }><strong>{id}</strong></Link>
     );
   },
 

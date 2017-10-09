@@ -11,7 +11,6 @@ var AnalyticsIndex = React.createClass({
   displayName: 'AnalyticsIndex',
 
   propTypes: {
-    children: React.PropTypes.object,
     _fetchProvinces: React.PropTypes.func,
     _fetchVProMMsids: React.PropTypes.func,
     _fetchVProMMsidsProperties: React.PropTypes.func,
@@ -35,13 +34,14 @@ var AnalyticsIndex = React.createClass({
   },
 
   renderAnalyticsIndex: function () {
-    const vprommsProvinceKeys = Object.keys(_.invert(this.props.crosswalk.province));
-    const provinces = this.props.provinces.filter(province => vprommsProvinceKeys.indexOf(province.id.toString()) !== -1);
+    // pluck provinces w/vpromms data from provinces fetched from database.
+    const vprommsProvinces = Object.keys(this.props.crosswalk.province);
+    const provinces = this.props.provinces.filter(province => vprommsProvinces.includes(province.id.toString()));
+    // { # of roads with field data, total # of roads }
     let accumulator = { field: this.props.fieldIds.length, total: Object.keys(this.props.VProMMs).length };
     const provinceData = _.map(provinces, (province, key) => {
-      // very very crude answer to an issue of english name, will pluck when names are cleaned;
-      const name = province.name_en.replace('Thua Thien H', 'Thua Thien');
-      const id = _.invert(this.props.crosswalk.province)[province.id];
+      const name = province.name_en;
+      const id = this.props.crosswalk.province[province.id];
       const route = province.id;
       const idTest = new RegExp(id);
       const field = this.props.fieldIds.filter(vpromm => idTest.test(vpromm.substring(0, 2))).length;

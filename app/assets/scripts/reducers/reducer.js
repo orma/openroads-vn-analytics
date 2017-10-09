@@ -392,36 +392,6 @@ const VProMMSidsAnalytics = function (state = VProMMSidsAnalyticsDefaultState, a
   return state;
 };
 
-const VProMMsWayBboxDefaultState = {
-  fetching: false,
-  fetched: false,
-  bbox: []
-};
-
-const defaultVProMMSidsSources = {
-  fetching: false,
-  fetched: false,
-  sources: []
-};
-
-const VProMMSidsSources = function (state = defaultVProMMSidsSources, action) {
-  switch (action.type) {
-    case actions.REQUEST_VPROMMS_IDS_SOURCES:
-      console.log('REQUEST_VPROMMS_IDS_SOURCES');
-      state = _.cloneDeep(state);
-      state.fetching = true;
-      break;
-    case actions.RECEIVE_VPROMMS_IDS_SOURCES:
-      console.log('RECEIVE_VPROMMS_IDS_SOURCES');
-      state = _.cloneDeep(state);
-      state.sources = action.json;
-      state.fetching = false;
-      state.fetched = true;
-      break;
-  }
-  return state;
-};
-
 const defaultVProMMSidSourceGeoJSON = {
   fetching: false,
   fetched: false,
@@ -453,6 +423,12 @@ const VProMMSidSourceGeoJSON = function (state = defaultVProMMSidSourceGeoJSON, 
   return state;
 };
 
+const VProMMsWayBboxDefaultState = {
+  fetching: false,
+  fetched: false,
+  bbox: []
+};
+
 const VProMMsWayBbox = function (state = VProMMsWayBboxDefaultState, action) {
   switch (action.type) {
     case actions.REQUEST_VPROMMS_IDS:
@@ -469,13 +445,13 @@ const VProMMsWayBbox = function (state = VProMMsWayBboxDefaultState, action) {
   return state;
 };
 
-const defaultVProMMsidPropertiesGeoJSON = {
+const defaultVProMMsProperties = {
   fetching: false,
   fetched: false,
   properties: {}
 };
 
-const VProMMsidProperties = function (state = defaultVProMMsidPropertiesGeoJSON, action) {
+const VProMMsidProperties = function (state = defaultVProMMsProperties, action) {
   switch (action.type) {
     case actions.REQUEST_VPROMMS_PROPERTIES:
       state = _.cloneDeep(state);
@@ -486,6 +462,11 @@ const VProMMsidProperties = function (state = defaultVProMMsidPropertiesGeoJSON,
       state.fetching = false;
       state.fetched = true;
       state.properties = action.json;
+      break;
+    case actions.REMOVE_VPROMMS_PROPERTIES:
+      state = _.cloneDeep(state);
+      state = defaultVProMMsProperties;
+      break;
   }
   return state;
 };
@@ -623,12 +604,19 @@ const provinces = function (state = defaultProvinces, action) {
   return state;
 };
 
-const crosswalk = function (state = {}, action) {
+const defaultCrossWalk = {
+  province: {},
+  district: {},
+  set: false
+}
+
+const crosswalk = function (state = defaultCrossWalk, action) {
   switch (action.type) {
     case actions.SET_CROSSWALK:
       state = _.cloneDeep(state);
-      state.province = _.invert(_.pickBy(ADMIN_MAP.province, (province) => { return !/^\s*$/.test(province); }));
+      state.province = _.pickBy(ADMIN_MAP.province, (province) => { return !/^\s*$/.test(province); });
       state.district = ADMIN_MAP.district;
+      state.set = true;
       break;
   }
   return state;
@@ -640,23 +628,17 @@ const defaultAdminChildren = {
   data: {}
 };
 
-const adminChildren = function (state = defaultAdminChildren, action) {
+const adminInfo = function (state = defaultAdminChildren, action) {
   switch (action.type) {
-    case actions.REQUEST_ADMIN_CHILDREN:
+    case actions.REQUEST_ADMIN_INFO:
       state = _.cloneDeep(state);
       state.fetching = true;
       break;
-    case actions.RECEIVE_ADMIN_CHILDREN:
+    case actions.RECEIVE_ADMIN_INFO:
       state = _.cloneDeep(state);
       state.fetching = false;
       state.fetched = true;
-      state.data = {
-        children: action.json.children,
-        level: action.json.level,
-        name: action.json.name_en,
-        childLevel: action.json.children_level,
-        parent: action.json.parent.id
-      };
+      state.data = action.json;
   }
   return state;
 };
@@ -672,13 +654,58 @@ const adminLevel = function (state = defaultAdminLevel, action) {
   return state;
 };
 
+const defaultAdminRoads = {
+  fetching: false,
+  fetched: false,
+  ids: []
+};
+
+const adminRoads = function (state = defaultAdminRoads, action) {
+  switch (action.type) {
+    case actions.REQUEST_ADMIN_ROADS:
+      state = _.cloneDeep(state);
+      state.fetching = true;
+      break;
+    case actions.RECEIVE_ADMIN_ROADS:
+      state = _.cloneDeep(state);
+      state.fetched = true;
+      state.fetching = false;
+      state.ids = action.json;
+      break;
+  }
+  return state;
+};
+
+const defaultFieldRoads = {
+  fetching: false,
+  fetched: false,
+  ids: []
+};
+
+const fieldRoads = function (state = defaultFieldRoads, action) {
+  switch (action.type) {
+    case actions.REQUEST_FIELD_ROADS:
+      state = _.cloneDeep(state);
+      state.fetching = true;
+      break;
+    case actions.RECEIVE_FIELD_ROADS:
+      state = _.cloneDeep(state);
+      state.fetching = false;
+      state.fetched = true;
+      state.ids = action.json;
+      break;
+  }
+  return state;
+};
+
 export default combineReducers({
   admin,
   admins,
+  adminInfo,
   adminBbox,
+  adminRoads,
   waytasks,
   osmChange,
-  adminChildren,
   crosswalk,
   search,
   stats,
@@ -700,6 +727,6 @@ export default combineReducers({
   VProMMsWayBbox,
   VProMMsidProperties,
   VProMMSidSourceGeoJSON,
-  VProMMSidsSources,
+  fieldRoads,
   fieldVProMMsids
 });

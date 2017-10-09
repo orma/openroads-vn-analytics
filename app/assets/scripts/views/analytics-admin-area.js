@@ -7,7 +7,14 @@ import { Link } from 'react-router';
 
 import AATable from '../components/aa-table-vpromms';
 
-import { fetchVProMMsids, fetchAdminChildren, fetchFieldVProMMsids, fetchVProMMsidsProperties, setCrossWalk } from '../actions/action-creators';
+import {
+  fetchAdminInfo,
+  fetchAdminRoads,
+  fetchFieldRoads,
+  fetchVProMMsidsProperties,
+  removeVProMMsidsProperties,
+  setCrossWalk
+} from '../actions/action-creators';
 
 import config from '../config';
 
@@ -18,20 +25,26 @@ var AnalyticsAA = React.createClass({
     _fetchVProMMsids: React.PropTypes.func,
     _fetchFieldVProMMsids: React.PropTypes.func,
     _fetchVProMMsidsProperties: React.PropTypes.func,
-    _fetchAdminChildren: React.PropTypes.func,
+    _fetchFieldRoads: React.PropTypes.func,
+    _fetchAdminInfo: React.PropTypes.func,
+    _fetchAdminRoads: React.PropTypes.func,
+    _removeVProMMsidsProperties: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
-    children: React.PropTypes.object,
     routeParams: React.PropTypes.object,
     crosswalk: React.PropTypes.object,
+    crosswalkSet: React.PropTypes.bool,
     params: React.PropTypes.object,
     provinceCrossWalk: React.PropTypes.object,
     VProMMSids: React.PropTypes.object,
     VProMMsProps: React.PropTypes.object,
-    fieldIds: React.PropTypes.array,
+    fieldRoads: React.PropTypes.array,
     fieldFetched: React.PropTypes.bool,
     propsFetched: React.PropTypes.bool,
-    adminChildren: React.PropTypes.object,
-    adminChildrenFetched: React.PropTypes.bool,
+    adminInfo: React.PropTypes.object,
+    adminInfoFetched: React.PropTypes.bool,
+    adminRoads: React.PropTypes.array,
+    adminRoadsFetched: React.PropTypes.bool,
+    adminRoadsFetching: React.PropTypes.bool,
     location: React.PropTypes.object
   },
 
@@ -40,7 +53,11 @@ var AnalyticsAA = React.createClass({
       <ul className='a-children'>
         {children.map((child, i) => {
           return (
-            <li><Link onClick={(e) => { this.props._fetchAdminChildren(child.id); } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link></li>
+            <li><Link onClick={(e) => {
+              this.props._removeVProMMsidsProperties();
+              this.props._fetchAdminInfo(child.id);
+            } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
+          </li>
           );
         })}
       </ul>
@@ -57,36 +74,49 @@ var AnalyticsAA = React.createClass({
   },
 
   componentWillMount: function () {
+    this.props._fetchAdminInfo(this.props.params.aaId);
     this.props._fetchVProMMsidsProperties();
-    this.props._fetchFieldVProMMsids();
-    this.props._fetchAdminChildren(this.props.params.aaId);
   },
 
+  componentWillReceiveProps: function (nextProps) {
+    const allFetched = (nextProps.adminInfoFetched && nextProps.propsFetched && nextProps.crosswalkSet);
+    const newAdmin = (this.props.location.pathname !== nextProps.location.pathname);
+    // A catch all for the adminRoads.
+    const roadsFetched = (nextProps.adminRoadsFetched || this.props.adminRoadsFetched || this.props.adminRoadsFetching || nextProps.adminRoadsFetching);
+    // get next admin info when navigating to child admin
+    if (newAdmin) {
+      return this.props._fetchAdminInfo(nextProps.params.aaId);
+    }
+    if (roadsFetched) { return; }
+    if (allFetched || newAdmin) {
+      return this.getAdminData(nextProps);
+    }
+  },
+
+  // shouldComponentUpdate: function () { return true; },
+
+  getAdminData: function (props) {
+    const level = props.adminInfo.level;
+    let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId]] : (
+      [props.crosswalk['province'][props.adminInfo.parent], props.crosswalk[level][props.params.aaId]]
+    );
+    this.props._fetchAdminRoads(ids, level);
+    this.props._fetchFieldRoads(ids, level);
+  },
+
+  // back button push on district back to province page does not reload province name.
+  // this fire of fetchAdminChildren with the district parent (a province) ensures that it does.
   handlePop: function () {
-    this.props.adminChildren.level === 'district' ? this.props._fetchAdminChildren(this.props.adminChildren.parent) : '';
+    this.props.adminInfo.level === 'district' ? this.props._fetchAdminInfo(this.props.adminInfo.parent) : '';
   },
 
   renderAnalyticsAdmin: function () {
-    this.props.location.action === 'POP' ? this.handlePop() : '';
-    const level = this.props.adminChildren.level;
-    const provinceId = (level === 'province') ? _.invert(this.props.crosswalk[level])[this.props.params.aaId] : this.props.crosswalk[level][this.props.params.aaId];
-    const provinceName = this.props.adminChildren.name;
-    const idTest = (level === 'province') ? new RegExp(provinceId) : [new RegExp(provinceId), new RegExp(_.invert(this.props.crosswalk['province'])[this.props.adminChildren.parent])];
-    const adminData = (level === 'province') ? Object.keys(this.props.VProMMsProps).filter(id => idTest.test(id.substring(0, 2))) : (Object.keys(this.props.VProMMsProps).filter(
-      (id) => {
-        id = id.substring(0, 5);
-        return idTest[0].test(id) && idTest[1].test(id);
-      })
-    );
-    const propertiesData = _.pickBy(this.props.VProMMsProps, (prop, vpromm) => (adminData.indexOf(vpromm) !== -1));
-    const field = (level === 'province') ? this.props.fieldIds.filter(vpromm => idTest.test(vpromm.substring(0, 2))).length : (Object.keys(this.props.VProMMsProps).filter(
-      (id) => {
-        id = id.substring(0, 5);
-        return idTest[0].test(id) && idTest[1].test(id);
-      }).length
-    );
-    const total = adminData.length;
-    const completion = total !== 0 ? ((field / total) * 100) : 0;
+    const propertiesData = _.pickBy(this.props.VProMMsProps, (prop, vpromm) => (this.props.adminRoads.includes(vpromm)));
+    const level = this.props.adminInfo.level;
+    const provinceId = this.props.crosswalk[level][this.props.params.aaId];
+    const total = this.props.adminRoads.length;
+    const field = this.props.fieldRoads.length;
+    const completion = (total !== 0) ? ((field / total) * 100) : 0;
     let completionMainText;
     let completionTailText = t('Information on VPRoMMS roads is not available');
     if (total !== 0) {
@@ -98,14 +128,14 @@ var AnalyticsAA = React.createClass({
       <div>
         <div className='a-header'>
           <div className='a-headline'>
-            <h1>{provinceName}</h1>
+            <h1>{this.props.adminInfo.name_en}</h1>
           </div>
           <div className='a-head-actions'>
             { completion ? this.renderDataDumpLinks(provinceId) : '' }
           </div>
         </div>
         <div>
-          { (level !== 'district') ? this.renderAdminChildren(this.props.adminChildren.children) : '' }
+          { (level !== 'district') ? this.renderAdminChildren(this.props.adminInfo.children) : '' }
           <div className='a-main__status'>
             <h2><strong>{completionMainText}</strong>{completionTailText}</h2>
             <div className='meter'>
@@ -113,7 +143,7 @@ var AnalyticsAA = React.createClass({
             </div>
           </div>
           <div>
-            {total ? <AATable data={adminData} propertiesData={propertiesData} /> : ''}
+            {total ? <AATable data={this.props.adminRoads} propertiesData={propertiesData} /> : ''}
           </div>
         </div>
       </div>
@@ -121,30 +151,36 @@ var AnalyticsAA = React.createClass({
   },
 
   render: function () {
-    const allFetched = (this.props.propsFetched && this.props.fieldFetched && this.props.adminChildrenFetched);
+    const allFetched = (this.props.propsFetched && this.props.adminInfoFetched && this.props.adminRoadsFetched && this.props.fieldFetched);
     return allFetched ? this.renderAnalyticsAdmin() : (<div/>);
   }
+
 });
 
 function selector (state) {
   return {
-    fieldIds: state.fieldVProMMsids.ids,
+    fieldRoads: state.fieldRoads.ids,
     crosswalk: state.crosswalk,
     propsFetched: state.VProMMsidProperties.fetched,
     fieldFetched: state.fieldVProMMsids.fetched,
     VProMMSids: state.VProMMSidsAnalytics,
     VProMMsProps: state.VProMMsidProperties.properties,
-    adminChildren: state.adminChildren.data,
-    adminChildrenFetched: !state.adminChildren.fetching
+    adminInfo: state.adminInfo.data,
+    adminInfoFetched: state.adminInfo.fetched,
+    adminRoads: state.adminRoads.ids,
+    adminRoadsFetched: state.adminRoads.fetched,
+    adminRoadsFetching: state.adminRoads.fetching,
+    crosswalkSet: state.crosswalk.set
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _fetchVProMMsids: () => dispatch(fetchVProMMsids()),
-    _fetchFieldVProMMsids: () => dispatch(fetchFieldVProMMsids()),
     _fetchVProMMsidsProperties: () => dispatch(fetchVProMMsidsProperties()),
-    _fetchAdminChildren: (id) => dispatch(fetchAdminChildren(id)),
+    _fetchAdminRoads: (idTest, level) => dispatch(fetchAdminRoads(idTest, level)),
+    _fetchFieldRoads: (idTest, level) => dispatch(fetchFieldRoads(idTest, level)),
+    _fetchAdminInfo: (id, level) => dispatch(fetchAdminInfo(id, level)),
+    _removeVProMMsidsProperties: () => dispatch(removeVProMMsidsProperties()),
     _setCrossWalk: () => dispatch(setCrossWalk())
   };
 }

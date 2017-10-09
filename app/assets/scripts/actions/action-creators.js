@@ -48,22 +48,22 @@ export function clearAdmins () {
   };
 }
 
-function requestAdminChildren () {
+function requestAdminInfo () {
   return {
-    type: actions.REQUEST_ADMIN_CHILDREN
+    type: actions.REQUEST_ADMIN_INFO
   };
 }
 
-function receiveAdminChildren (json) {
+function receiveAdminInfo (json) {
   return {
-    type: actions.RECEIVE_ADMIN_CHILDREN,
+    type: actions.RECEIVE_ADMIN_INFO,
     json: json
   };
 }
 
-export function fetchAdminChildren (id) {
+export function fetchAdminInfo (id) {
   return function (dispatch) {
-    dispatch(requestAdminChildren());
+    dispatch(requestAdminInfo());
     const url = `${config.api}/admin/${id}/info`;
     return fetch(url)
     .then(response => response.json())
@@ -71,7 +71,7 @@ export function fetchAdminChildren (id) {
       if (json.statusCode >= 400) {
         throw new Error('Bad Request');
       }
-      dispatch(receiveAdminChildren(json));
+      dispatch(receiveAdminInfo(json));
     });
   };
 }
@@ -545,36 +545,6 @@ export function fetchVProMMsids () {
 //                   VProMMS IDs Source Data                     //
 // ////////////////////////////////////////////////////////////////
 
-function requestVProMMSidsSources () {
-  return {
-    type: actions.REQUEST_VPROMMS_IDS_SOURCES
-  };
-}
-
-function receiveVProMMSidsSources (json) {
-  return {
-    type: actions.RECEIVE_VPROMMS_IDS_SOURCES,
-    json: json,
-    recievedAt: Date.now()
-  };
-}
-
-export function fetchVProMMSidsSources (ids) {
-  return function (dispatch) {
-    dispatch(requestVProMMSidsSources());
-    let idsQuery = ids.join(',');
-    let url = `${config.api}/field/${idsQuery}/exists`;
-    return fetch(url)
-    .then(response => response.json())
-    .then(json => {
-      if (json.statusCode >= 400) {
-        throw new Error('Bad response');
-      }
-      dispatch(receiveVProMMSidsSources(json));
-    });
-  };
-}
-
 function requestVProMMSidSourceGeoJSON () {
   return {
     type: actions.REQUEST_VPROMMS_SOURCE_GEOJSON
@@ -642,6 +612,12 @@ export function fetchVProMMsidsProperties () {
   };
 }
 
+export function removeVProMMsidsProperties () {
+  return {
+    type: actions.REMOVE_VPROMMS_PROPERTIES
+  };
+}
+
 // ////////////////////////////////////////////////////////////////
 //                         Explore Map                           //
 // ////////////////////////////////////////////////////////////////
@@ -697,6 +673,11 @@ export function setAdmin (admin) {
     name: admin.name
   };
 }
+
+// ///////////////////////////////////////////////////////////////
+//                             Roads                            //
+// ///////////////////////////////////////////////////////////////
+
 function requestVProMMsBbox () {
   return {
     type: actions.REQUEST_VPROMMS_BBOX
@@ -756,6 +737,68 @@ export function fetchFieldVProMMsids (json) {
         throw new Error('Bad Response');
       }
       dispatch(receiveFieldVProMMsids(json));
+    });
+  };
+}
+
+function requestFieldRoads () {
+  return {
+    type: actions.REQUEST_FIELD_ROADS
+  };
+}
+
+function receiveFieldRoads (json) {
+  return {
+    type: actions.RECEIVE_FIELD_ROADS,
+    json: json
+  };
+}
+
+export function fetchFieldRoads (json, level) {
+  return function (dispatch) {
+    dispatch(requestFieldRoads());
+    let url = `${config.api}/field/roads?province=${json[0]}`;
+    if (level === 'district') {
+      url = `${url}&district=${json[1]}`;
+    }
+    return fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      if (json.statusCode >= 400) {
+        throw new Error('Bad Response');
+      }
+      dispatch(receiveFieldRoads(json));
+    });
+  };
+}
+
+function requestAdminRoads () {
+  return {
+    type: actions.REQUEST_ADMIN_ROADS
+  };
+}
+
+function receiveAdminRoads (json) {
+  return {
+    type: actions.RECEIVE_ADMIN_ROADS,
+    json: json
+  };
+}
+
+export function fetchAdminRoads (json, level) {
+  return function (dispatch) {
+    dispatch(requestAdminRoads());
+    let url = `${config.api}/admin/roads?province=${json[0]}`;
+    if (level === 'district') {
+      url = `${url}&district=${json[1]}`;
+    }
+    return fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      if (json.statusCode >= 400) {
+        throw new Error('Bad Response');
+      }
+      dispatch(receiveAdminRoads(json));
     });
   };
 }
