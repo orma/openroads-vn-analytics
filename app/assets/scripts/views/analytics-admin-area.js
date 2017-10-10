@@ -112,7 +112,7 @@ var AnalyticsAA = React.createClass({
     const level = this.props.adminInfo.level;
     const id = this.props.crosswalk[level][this.props.params.aaId].id;
     const name = (level === 'district') ? this.props.adminInfo.name_en : this.props.crosswalk[level][this.props.params.aaId].name;
-    const total = this.props.VProMMsCount[0].total_roads;
+    const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
     let completionMainText;
