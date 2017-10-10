@@ -154,7 +154,7 @@ var AnalyticsAA = React.createClass({
   render: function () {
     const roadsFetched = (this.props.fieldFetched, this.props.adminRoadProperties);
     return (
-      <div ref='a-admin-area' className='a-admin-area-show'>
+      <div className='a-admin-area-show'>
         {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
       </div>
     );

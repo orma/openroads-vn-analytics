@@ -18,8 +18,6 @@
   .aa-main {
     @extend .row;
     @extend .row--centered;
-    .a-admin-area-hide { display: none; }
-    .a-admin-area-show { display: visible; }
   }
 
   .a-header {
