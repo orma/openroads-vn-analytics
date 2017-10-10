@@ -41,8 +41,8 @@ var AnalyticsIndex = React.createClass({
     // { # of roads with field data, total # of roads }
     let accumulator = { field: total, total: field };
     const provinceData = _.map(provinces, (province, key) => {
-      const name = province.name_en;
-      const id = this.props.crosswalk.province[province.id];
+      const name = this.props.crosswalk.province[province.id].name;
+      const id = this.props.crosswalk.province[province.id].id;
       const route = province.id;
       const idTest = new RegExp(id);
       // returns # of total/field roads for a given province.

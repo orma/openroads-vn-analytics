@@ -112,6 +112,8 @@ var AnalyticsAA = React.createClass({
     const adminRoadIds = this.props.adminRoadProperties.map(road => road.id);
     const level = this.props.adminInfo.level;
     const provinceId = this.props.crosswalk[level][this.props.params.aaId];
+    // TOFIX: Upon having district in crosswalks, remove inline conditional
+    const provinceName = (level === 'province') ? this.props.crosswalk[level][this.props.params.aaId].name : this.props.adminInfo.name_en;
     const total = Object.keys(this.props.adminRoadProperties).length;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
@@ -125,7 +127,7 @@ var AnalyticsAA = React.createClass({
       <div>
         <div className='a-header'>
           <div className='a-headline'>
-            <h1>{this.props.adminInfo.name_en}</h1>
+            <h1>{provinceName}</h1>
           </div>
           {/* completion suggests data exists, in whcih case there is data available for download */}
           <div className='a-head-actions'>
