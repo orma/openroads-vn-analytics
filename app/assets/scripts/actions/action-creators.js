@@ -886,12 +886,15 @@ function receiveAdminVProMMsProps (json) {
   };
 }
 
-export function fetchAdminVProMMsProps (json, level) {
+export function fetchAdminVProMMsProps (json, level, offset) {
   return function (dispatch) {
     dispatch(requestAdminVProMMsProps());
     let url = `${config.api}/admin/roads/properties?province=${json[0]}`;
     if (level === 'district') {
       url = `${url}&district=${json[1]}`;
+    }
+    if (offset) {
+      url = `${url}&offset=${offset}`;
     }
     return fetch(url)
     .then(response => response.json())
@@ -1008,5 +1011,16 @@ export function fetchProvinces () {
 export function setCrossWalk () {
   return {
     type: actions.SET_CROSSWALK
+  };
+}
+
+// ////////////////////////////////////////////////////////////////
+//                        PAGINATION                             //
+// ////////////////////////////////////////////////////////////////
+
+export function setOffset (offset) {
+  return {
+    type: actions.SET_OFFSET,
+    offset: offset
   };
 }

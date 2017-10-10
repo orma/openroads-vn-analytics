@@ -770,6 +770,16 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
   return state;
 };
 
+const offset = function (state = {index: 0}, action) {
+  switch (action.type) {
+    case actions.SET_OFFET:
+      state = _.cloneDeep(state);
+      state.offset = action.offset;
+      break;
+  }
+  return state;
+};
+
 export default combineReducers({
   admin,
   admins,
@@ -803,5 +813,6 @@ export default combineReducers({
   VProMMsAdminProperties,
   VProMMSidSourceGeoJSON,
   fieldRoads,
-  fieldVProMMsids
+  fieldVProMMsids,
+  offset
 });

@@ -108,6 +108,14 @@ var AnalyticsAA = React.createClass({
     this.props._fetchFieldRoads(ids, level);
   },
 
+  getNextRoads: function (props) {
+    const level = props.adminInfo.level;
+    let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
+      [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
+    );
+    this.props._fetchAdminVProMMsProps(level, ids, props.offset)
+  },
+
   makeAdminAnalyticsContent: function () {
     const level = this.props.adminInfo.level;
     const id = this.props.crosswalk[level][this.props.params.aaId].id;
