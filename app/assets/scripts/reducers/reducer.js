@@ -770,12 +770,16 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
   return state;
 };
 
-const defaultPagination = {currentPage: 0, index: 0, pages: 0};
+const defaultPagination = {currentPage: 0, currentIndex: 0, pages: 0};
 
 const pagination = function (state = defaultPagination, action) {
   switch (action.type) {
     case actions.SET_PAGINATION:
       return action.json;
+    case actions.UPDATE_PAGINATION:
+      state = _.cloneDeep(state);
+      state.currentIndex = action.json.currentIndex;
+      state.currentPage = action.json.currentPage;
   }
   return state;
 };

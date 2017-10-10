@@ -16,7 +16,8 @@ import {
   removeAdminVProMMsProps,
   removeAdminInfo,
   setCrossWalk,
-  setPagination
+  setPagination,
+  updatePagination
 } from '../actions/action-creators';
 
 import config from '../config';
@@ -36,6 +37,8 @@ var AnalyticsAA = React.createClass({
     _removeVProMMsCount: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
     _setOffset: React.PropTypes.func,
+    _setPagination: React.PropTypes.func,
+    _updatePagination: React.PropTypes.func,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
     params: React.PropTypes.object,
@@ -92,7 +95,7 @@ var AnalyticsAA = React.createClass({
     if (!this.props.VProMMsCountFetched && this.props.VProMMsCountFetched) {
       const paginationConfig = makePaginationConfig(this.props.VProMMsCountFetched, 20);
       this.props._setPagination(paginationConfig);
-    } 
+    }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
@@ -121,7 +124,7 @@ var AnalyticsAA = React.createClass({
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
       [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
-    this.props._fetchAdminVProMMsProps(level, ids, props.offset)
+    this.props._fetchAdminVProMMsProps(level, ids, props.offset);
   },
 
   makeAdminAnalyticsContent: function () {
@@ -226,7 +229,8 @@ function dispatcher (dispatch) {
     _removeAdminInfo: () => dispatch(removeAdminInfo()),
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
     _setCrossWalk: () => dispatch(setCrossWalk()),
-    _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig))
+    _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig)),
+    _updatePagination: (paginationUpdates) => dispatch(updatePagination(paginationUpdates))
   };
 }
 

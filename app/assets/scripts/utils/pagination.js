@@ -43,6 +43,6 @@ exports.newPage = function (pageDirection, indexJump, limit, currentPage) {
   } else if (pageDirection === 'down') {
     return currentPage - absoluteJump;
   } else {
-    throw new Error('pageDirection must be set to either up or down.'); 
+    throw new Error('pageDirection must be set to either up or down.');
   }
-}
+};

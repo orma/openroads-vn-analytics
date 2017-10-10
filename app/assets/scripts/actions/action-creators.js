@@ -1024,3 +1024,10 @@ export function setPagination (paginationObject) {
     json: paginationObject
   };
 }
+
+export function updatePaginationLocation (json) {
+  return {
+    type: actions.UPDATE_PAGINATION,
+    json: json
+  };
+}
