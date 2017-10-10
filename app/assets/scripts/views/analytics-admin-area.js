@@ -37,7 +37,6 @@ var AnalyticsAA = React.createClass({
     fieldFetched: React.PropTypes.bool,
     adminInfo: React.PropTypes.object,
     adminInfoFetched: React.PropTypes.bool,
-    adminInfoFetching: React.PropTypes.bool,
     adminRoadProperties: React.PropTypes.array,
     adminRoadPropertiesFetched: React.PropTypes.bool,
     location: React.PropTypes.object
@@ -182,15 +181,12 @@ function selector (state) {
   return {
     adminInfo: state.adminInfo.data,
     adminInfoFetched: state.adminInfo.fetched,
-    adminInfoFetching: state.adminInfo.fetching,
     adminRoadProperties: state.VProMMsAdminProperties.data,
     adminRoadPropertiesFetched: state.VProMMsAdminProperties.fetched,
     crosswalk: state.crosswalk,
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
-    propsFetched: state.VProMMsidProperties.fetched,
-    fieldFetched: state.fieldRoads.fetched,
-    VProMMSids: state.VProMMSidsAnalytics
+    fieldFetched: state.fieldRoads.fetched
   };
 }
 
