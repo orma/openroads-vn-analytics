@@ -10,6 +10,7 @@ import {
   fetchAdminInfo,
   fetchAdminRoads,
   fetchFieldRoads,
+  fetchVProMMsIdsCount,
   fetchAdminVProMMsProps,
   removeAdminVProMMsProps,
   removeAdminInfo,
@@ -23,12 +24,14 @@ var AnalyticsAA = React.createClass({
 
   propTypes: {
     _fetchVProMMsids: React.PropTypes.func,
+    _fetchVProMMsIdsCount: React.PropTypes.func,
     _fetchFieldVProMMsids: React.PropTypes.func,
     _fetchAdminVProMMsProps: React.PropTypes.func,
     _fetchFieldRoads: React.PropTypes.func,
     _fetchAdminInfo: React.PropTypes.func,
     _removeAdminInfo: React.PropTypes.func,
     _removeAdminVProMMsProps: React.PropTypes.func,
+    _removeVProMMsCount: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
@@ -39,7 +42,9 @@ var AnalyticsAA = React.createClass({
     adminInfoFetched: React.PropTypes.bool,
     adminRoadProperties: React.PropTypes.array,
     adminRoadPropertiesFetched: React.PropTypes.bool,
-    location: React.PropTypes.object
+    location: React.PropTypes.object,
+    VProMMsCount: React.PropTypes.array,
+    VProMMsCountFetched: React.PropTypes.bool
   },
 
   renderAdminChildren: function (children) {
@@ -98,6 +103,7 @@ var AnalyticsAA = React.createClass({
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
       [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
+    this.props._fetchVProMMsIdsCount(level, ids);
     this.props._fetchAdminVProMMsProps(ids, level);
     this.props._fetchFieldRoads(ids, level);
   },
@@ -106,7 +112,7 @@ var AnalyticsAA = React.createClass({
     const level = this.props.adminInfo.level;
     const id = this.props.crosswalk[level][this.props.params.aaId].id;
     const name = (level === 'district') ? this.props.adminInfo.name_en : this.props.crosswalk[level][this.props.params.aaId].name;
-    const total = Object.keys(this.props.adminRoadProperties).length;
+    const total = this.props.VProMMsCount[0].total_roads;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
     let completionMainText;
@@ -167,7 +173,7 @@ var AnalyticsAA = React.createClass({
   },
 
   render: function () {
-    const roadsFetched = (this.props.fieldFetched && this.props.adminRoadPropertiesFetched);
+    const roadsFetched = (this.props.fieldFetched && this.props.adminRoadPropertiesFetched && this.props.VProMMsCountFetched);
     return (
       <div ref='a-admin-area' className='a-admin-area-show'>
         {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
@@ -186,7 +192,9 @@ function selector (state) {
     crosswalk: state.crosswalk,
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
-    fieldFetched: state.fieldRoads.fetched
+    fieldFetched: state.fieldRoads.fetched,
+    VProMMsCount: state.roadIdCount.counts,
+    VProMMsCountFetched: state.roadIdCount.fetched
   };
 }
 
@@ -195,6 +203,7 @@ function dispatcher (dispatch) {
     _fetchAdminVProMMsProps: (idTest, level) => dispatch(fetchAdminVProMMsProps(idTest, level)),
     _fetchAdminRoads: (idTest, level) => dispatch(fetchAdminRoads(idTest, level)),
     _fetchFieldRoads: (idTest, level) => dispatch(fetchFieldRoads(idTest, level)),
+    _fetchVProMMsIdsCount: (idTest, level) => dispatch(fetchVProMMsIdsCount(idTest, level)),
     _fetchAdminInfo: (id, level) => dispatch(fetchAdminInfo(id, level)),
     _removeAdminInfo: () => dispatch(removeAdminInfo()),
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),

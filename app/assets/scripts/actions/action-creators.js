@@ -637,10 +637,14 @@ function receiveVProMMSidsCount (json) {
   };
 }
 
-export function fetchVProMMsIdsCount (level) {
+export function fetchVProMMsIdsCount (level, id) {
   return function (dispatch) {
     dispatch(requestVProMMsidsCount());
     let url = `${config.api}/admin/roads/total`;
+    if (id) {
+      id = id.join('');
+      url = `${url}/${id}`;
+    }
     if (level === 'district') {
       url = `${url}?level=district`;
     }
