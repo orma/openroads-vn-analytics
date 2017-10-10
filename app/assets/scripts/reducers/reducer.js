@@ -464,7 +464,6 @@ const VProMMsidProperties = function (state = defaultVProMMsProperties, action) 
       state.properties = action.json;
       break;
     case actions.REMOVE_VPROMMS_PROPERTIES:
-      state = _.cloneDeep(state);
       state = defaultVProMMsProperties;
       break;
   }
@@ -490,7 +489,6 @@ const VProMMsAdminProperties = function (state = defaultVProMMsAdminProperties, 
       state.data = action.json;
       break;
     case actions.REMOVE_ADMIN_VPROMMS_PROPERTIES:
-      state = _.cloneDeep();
       state = defaultVProMMsAdminProperties;
       break;
   }
@@ -711,7 +709,6 @@ const adminInfo = function (state = defaultAdminInfo, action) {
       state.data = action.json;
       break;
     case actions.REMOVE_ADMIN_INFO:
-      state = _.cloneDeep(state);
       state = defaultAdminInfo;
       break;
   }

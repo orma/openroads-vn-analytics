@@ -630,7 +630,7 @@ function requestVProMMsidsCount () {
   };
 }
 
-function receieveVProMMsidsCount (json) {
+function receiveVProMMSidsCount (json) {
   return {
     type: actions.RECEIVE_VPROMMS_IDS_COUNT,
     json: json
@@ -650,7 +650,7 @@ export function fetchVProMMsIdsCount (level) {
       if (json.statusCode >= 400) {
         throw new Error('Bad Request');
       }
-      dispatch(receieveVProMMsidsCount(json));
+      dispatch(receiveVProMMSidsCount(json));
     });
   };
 }

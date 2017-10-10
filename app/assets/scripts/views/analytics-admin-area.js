@@ -47,9 +47,11 @@ var AnalyticsAA = React.createClass({
     return (
       <ul className='a-children'>
         {children.map((child, i) => {
+          var childKey = `${child}-${i}`;
           return (
-            <li><Link onClick={(e) => {
+            <li key={childKey} ><Link onClick={(e) => {
               this.props._removeAdminVProMMsProps();
+              this.props._removeAdminInfo();
               this.props._fetchAdminInfo(child.id);
             } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
           </li>
@@ -76,7 +78,7 @@ var AnalyticsAA = React.createClass({
   componentWillReceiveProps: function (nextProps) {
     // if the adminInfo is about to be fetched and ready for render
     // grab the admin properties and field data needed to fill out the tables
-    if (this.props.adminInfoFetching && nextProps.adminInfoFetched) {
+    if (!this.props.adminInfoFetched && nextProps.adminInfoFetched) {
       return this.getAdminData(nextProps);
     }
     // if switching between a district to its parent province,
