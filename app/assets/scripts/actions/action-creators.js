@@ -1018,9 +1018,10 @@ export function setCrossWalk () {
 //                        PAGINATION                             //
 // ////////////////////////////////////////////////////////////////
 
-export function setOffset (offset) {
+export function setPagination (paginationObject) {
   return {
     type: actions.SET_OFFSET,
-    offset: offset
+    offset: paginationObject.index,
+    page: paginationObject.pages
   };
 }
