@@ -1,6 +1,4 @@
 'use strict';
-/* global L */
-require('mapbox.js');
 import 'babel-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
@@ -13,8 +11,6 @@ import { createLogger } from 'redux-logger';
 import reducer from './reducers/reducer';
 import config from './config';
 import { isValidLanguage, setLanguage } from './utils/i18n';
-
-L.mapbox.accessToken = config.mbToken;
 
 import UhOh from './views/uhoh';
 import App from './views/app';

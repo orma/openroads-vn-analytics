@@ -172,7 +172,12 @@ function selector (state) {
     crosswalk: state.crosswalk,
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
-    fieldFetched: state.fieldRoads.fetched
+    propsFetched: state.VProMMsidProperties.fetched,
+    fieldFetched: state.fieldVProMMsids.fetched,
+    VProMMSids: state.VProMMSidsAnalytics,
+    VProMMsProps: state.VProMMsidProperties.properties,
+    adminChildren: state.adminChildren.data,
+    adminChildrenFetched: state.adminChildren.fetched
   };
 }
 
