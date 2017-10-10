@@ -39,7 +39,7 @@ var AnalyticsAA = React.createClass({
     adminInfoFetched: React.PropTypes.bool,
     adminInfoFetching: React.PropTypes.bool,
     adminRoadProperties: React.PropTypes.array,
-    adminRoadsPropertiesFetched: React.PropTypes.bool,
+    adminRoadPropertiesFetched: React.PropTypes.bool,
     location: React.PropTypes.object
   },
 
@@ -173,7 +173,7 @@ var AnalyticsAA = React.createClass({
   },
 
   render: function () {
-    const roadsFetched = (this.props.fieldFetched && this.props.adminRoadProperties);
+    const roadsFetched = (this.props.fieldFetched && this.props.adminRoadPropertiesFetched);
     return (
       <div ref='a-admin-area' className='a-admin-area-show'>
         {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
@@ -193,7 +193,9 @@ function selector (state) {
     crosswalk: state.crosswalk,
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
-    fieldFetched: state.fieldRoads.fetched
+    propsFetched: state.VProMMsidProperties.fetched,
+    fieldFetched: state.fieldRoads.fetched,
+    VProMMSids: state.VProMMSidsAnalytics
   };
 }
 
