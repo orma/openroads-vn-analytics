@@ -34,7 +34,6 @@ var Analytics = React.createClass({
 
 function selector (state) {
   return {
-    fieldVProMMsids: state.fieldVProMMsids.ids,
     crosswalk: state.crosswalk
   };
 }

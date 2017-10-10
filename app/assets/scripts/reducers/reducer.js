@@ -471,6 +471,32 @@ const VProMMsidProperties = function (state = defaultVProMMsProperties, action) 
   return state;
 };
 
+const defaultVProMMsAdminProperties = {
+  fetching: false,
+  fetched: false,
+  json: []
+};
+
+const VProMMsAdminProperties = function (state = defaultVProMMsAdminProperties, action) {
+  switch (action.type) {
+    case actions.REQUEST_ADMIN_VPROMMS_PROPERTIES:
+      state = _.cloneDeep(state);
+      state.fetching = true;
+      break;
+    case actions.RECEIVE_ADMIN_VPROMMS_PROPERTIES:
+      state = _.cloneDeep(state);
+      state.fetching = false;
+      state.fetched = true;
+      state.data = action.json;
+      break;
+    case actions.REMOVE_ADMIN_VPROMMS_PROPERTIES:
+      state = _.cloneDeep();
+      state = defaultVProMMsAdminProperties;
+      break;
+  }
+  return state;
+};
+
 const defaultFieldVProMMsids = {
   fetching: false,
   fetched: false,
@@ -608,7 +634,7 @@ const defaultCrossWalk = {
   province: {},
   district: {},
   set: false
-}
+};
 
 const crosswalk = function (state = defaultCrossWalk, action) {
   switch (action.type) {
@@ -622,13 +648,57 @@ const crosswalk = function (state = defaultCrossWalk, action) {
   return state;
 };
 
-const defaultAdminChildren = {
+const defaultVProMMsIdCount = {
+  fetching: false,
+  fetched: false,
+  counts: []
+};
+
+const roadIdCount = function (state = defaultVProMMsIdCount, action) {
+  switch (action.type) {
+    case actions.REQUEST_VPROMMS_IDS_COUNT:
+      state = _.cloneDeep(state);
+      state.fetching = true;
+      break;
+    case actions.RECEIVE_VPROMMS_IDS_COUNT:
+      state = _.cloneDeep(state);
+      state.fetching = false;
+      state.fetched = true;
+      state.counts = action.json;
+      break;
+  }
+  return state;
+};
+
+const defaultFieldVProMMsIdsCount = {
+  fetching: false,
+  fetched: false,
+  counts: []
+};
+
+const fieldIdCount = function (state = defaultFieldVProMMsIdsCount, action) {
+  switch (action.type) {
+    case actions.REQUEST_VPROMMS_FIELD_IDS_COUNT:
+      state = _.cloneDeep(state);
+      state.fetching = true;
+      break;
+    case actions.RECEIVE_VPROMMS_FIELD_IDS_COUNT:
+      state = _.cloneDeep(state);
+      state.fetched = true;
+      state.fetching = false;
+      state.counts = action.json;
+      break;
+  }
+  return state;
+};
+
+const defaultAdminInfo = {
   fetched: false,
   fetching: false,
   data: {}
 };
 
-const adminInfo = function (state = defaultAdminChildren, action) {
+const adminInfo = function (state = defaultAdminInfo, action) {
   switch (action.type) {
     case actions.REQUEST_ADMIN_INFO:
       state = _.cloneDeep(state);
@@ -639,6 +709,11 @@ const adminInfo = function (state = defaultAdminChildren, action) {
       state.fetching = false;
       state.fetched = true;
       state.data = action.json;
+      break;
+    case actions.REMOVE_ADMIN_INFO:
+      state = _.cloneDeep(state);
+      state = defaultAdminInfo;
+      break;
   }
   return state;
 };
@@ -704,6 +779,7 @@ export default combineReducers({
   adminInfo,
   adminBbox,
   adminRoads,
+  fieldIdCount,
   waytasks,
   osmChange,
   crosswalk,
@@ -717,6 +793,7 @@ export default combineReducers({
   projectsMeta,
   provinces,
   roadNetworkStatus,
+  roadIdCount,
   routing: routeReducer,
   searchDisplay,
   searchResultsDisplay,
@@ -726,6 +803,7 @@ export default combineReducers({
   VProMMSidsAnalytics,
   VProMMsWayBbox,
   VProMMsidProperties,
+  VProMMsAdminProperties,
   VProMMSidSourceGeoJSON,
   fieldRoads,
   fieldVProMMsids

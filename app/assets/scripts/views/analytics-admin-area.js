@@ -1,7 +1,6 @@
 'use strict';
 import React from 'react';
 import { connect } from 'react-redux';
-import { _ } from 'lodash';
 import { t, getLanguage } from '../utils/i18n';
 import { Link } from 'react-router';
 
@@ -11,8 +10,9 @@ import {
   fetchAdminInfo,
   fetchAdminRoads,
   fetchFieldRoads,
-  fetchVProMMsidsProperties,
-  removeVProMMsidsProperties,
+  fetchAdminVProMMsProps,
+  removeAdminVProMMsProps,
+  removeAdminInfo,
   setCrossWalk
 } from '../actions/action-creators';
 
@@ -24,27 +24,22 @@ var AnalyticsAA = React.createClass({
   propTypes: {
     _fetchVProMMsids: React.PropTypes.func,
     _fetchFieldVProMMsids: React.PropTypes.func,
-    _fetchVProMMsidsProperties: React.PropTypes.func,
+    _fetchAdminVProMMsProps: React.PropTypes.func,
     _fetchFieldRoads: React.PropTypes.func,
     _fetchAdminInfo: React.PropTypes.func,
-    _fetchAdminRoads: React.PropTypes.func,
-    _removeVProMMsidsProperties: React.PropTypes.func,
+    _removeAdminInfo: React.PropTypes.func,
+    _removeAdminVProMMsProps: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
-    routeParams: React.PropTypes.object,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
     params: React.PropTypes.object,
-    provinceCrossWalk: React.PropTypes.object,
-    VProMMSids: React.PropTypes.object,
-    VProMMsProps: React.PropTypes.object,
     fieldRoads: React.PropTypes.array,
     fieldFetched: React.PropTypes.bool,
-    propsFetched: React.PropTypes.bool,
     adminInfo: React.PropTypes.object,
     adminInfoFetched: React.PropTypes.bool,
-    adminRoads: React.PropTypes.array,
-    adminRoadsFetched: React.PropTypes.bool,
-    adminRoadsFetching: React.PropTypes.bool,
+    adminInfoFetching: React.PropTypes.bool,
+    adminRoadProperties: React.PropTypes.array,
+    adminRoadsPropertiesFetched: React.PropTypes.bool,
     location: React.PropTypes.object
   },
 
@@ -54,7 +49,7 @@ var AnalyticsAA = React.createClass({
         {children.map((child, i) => {
           return (
             <li><Link onClick={(e) => {
-              this.props._removeVProMMsidsProperties();
+              this.props._removeAdminVProMMsProps();
               this.props._fetchAdminInfo(child.id);
             } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
           </li>
@@ -73,48 +68,51 @@ var AnalyticsAA = React.createClass({
     );
   },
 
+  // before mount, get the admin info needed to make the list of child elements
+  // as well as build the correct api queries in getAdminData
   componentWillMount: function () {
     this.props._fetchAdminInfo(this.props.params.aaId);
-    this.props._fetchVProMMsidsProperties();
+    this.props._setCrossWalk();
+  },
+
+  // on each unmount, drain properties and admin info objects so to
+  // make the component to be the same each time
+  componentWillUnmount: function () {
+    this.props._removeAdminVProMMsProps();
+    this.props._removeAdminInfo();
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const allFetched = (nextProps.adminInfoFetched && nextProps.propsFetched && nextProps.crosswalkSet);
-    const newAdmin = (this.props.location.pathname !== nextProps.location.pathname);
-    // A catch all for the adminRoads.
-    const roadsFetched = (nextProps.adminRoadsFetched || this.props.adminRoadsFetched || this.props.adminRoadsFetching || nextProps.adminRoadsFetching);
-    // get next admin info when navigating to child admin
-    if (newAdmin) {
-      return this.props._fetchAdminInfo(nextProps.params.aaId);
-    }
-    if (roadsFetched) { return; }
-    if (allFetched || newAdmin) {
+    // if the adminInfo is about to be fetched and ready for render
+    // grab the admin properties and field data needed to fill out the tables
+    if (this.props.adminInfoFetching && nextProps.adminInfoFetched) {
       return this.getAdminData(nextProps);
     }
+    // if switching between a district to its parent province,
+    // fetch that parent admin info.
+    if (this.props.location.pathname !== nextProps.location.pathname) {
+      if (nextProps.params.aaId) {
+        if (nextProps.params.aaId.length === 3) {
+          return this.props._fetchAdminInfo(this.props.adminInfo.parent.id);
+        }
+      }
+    }
   },
-
-  // shouldComponentUpdate: function () { return true; },
 
   getAdminData: function (props) {
     const level = props.adminInfo.level;
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId]] : (
       [props.crosswalk['province'][props.adminInfo.parent], props.crosswalk[level][props.params.aaId]]
     );
-    this.props._fetchAdminRoads(ids, level);
+    this.props._fetchAdminVProMMsProps(ids, level);
     this.props._fetchFieldRoads(ids, level);
   },
 
-  // back button push on district back to province page does not reload province name.
-  // this fire of fetchAdminChildren with the district parent (a province) ensures that it does.
-  handlePop: function () {
-    this.props.adminInfo.level === 'district' ? this.props._fetchAdminInfo(this.props.adminInfo.parent) : '';
-  },
-
   renderAnalyticsAdmin: function () {
-    const propertiesData = _.pickBy(this.props.VProMMsProps, (prop, vpromm) => (this.props.adminRoads.includes(vpromm)));
+    const adminRoadIds = this.props.adminRoadProperties.map(road => road.id);
     const level = this.props.adminInfo.level;
     const provinceId = this.props.crosswalk[level][this.props.params.aaId];
-    const total = this.props.adminRoads.length;
+    const total = Object.keys(this.props.adminRoadProperties).length;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
     let completionMainText;
@@ -123,18 +121,19 @@ var AnalyticsAA = React.createClass({
       completionMainText = completion.toFixed(2);
       completionTailText = `% ${t('of VProMMS Ids have field data')} ${field.toLocaleString()} of ${total.toLocaleString()}`;
     }
-    // completion text is comprised of a main text component and a tail component, both need to be distinct per the existence of ids for the province.
     return (
       <div>
         <div className='a-header'>
           <div className='a-headline'>
             <h1>{this.props.adminInfo.name_en}</h1>
           </div>
+          {/* completion suggests data exists, in whcih case there is data available for download */}
           <div className='a-head-actions'>
             { completion ? this.renderDataDumpLinks(provinceId) : '' }
           </div>
         </div>
         <div>
+          {/* commune (district child) lists are not rendered */}
           { (level !== 'district') ? this.renderAdminChildren(this.props.adminInfo.children) : '' }
           <div className='a-main__status'>
             <h2><strong>{completionMainText}</strong>{completionTailText}</h2>
@@ -143,7 +142,7 @@ var AnalyticsAA = React.createClass({
             </div>
           </div>
           <div>
-            {total ? <AATable data={this.props.adminRoads} propertiesData={propertiesData} /> : ''}
+            {total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
           </div>
         </div>
       </div>
@@ -151,36 +150,38 @@ var AnalyticsAA = React.createClass({
   },
 
   render: function () {
-    const allFetched = (this.props.propsFetched && this.props.adminInfoFetched && this.props.adminRoadsFetched && this.props.fieldFetched);
-    return allFetched ? this.renderAnalyticsAdmin() : (<div/>);
+    const roadsFetched = (this.props.fieldFetched, this.props.adminRoadProperties);
+    return (
+      <div ref='a-admin-area' className='a-admin-area-show'>
+        {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
+      </div>
+    );
   }
 
 });
 
 function selector (state) {
   return {
-    fieldRoads: state.fieldRoads.ids,
-    crosswalk: state.crosswalk,
-    propsFetched: state.VProMMsidProperties.fetched,
-    fieldFetched: state.fieldVProMMsids.fetched,
-    VProMMSids: state.VProMMSidsAnalytics,
-    VProMMsProps: state.VProMMsidProperties.properties,
     adminInfo: state.adminInfo.data,
     adminInfoFetched: state.adminInfo.fetched,
-    adminRoads: state.adminRoads.ids,
-    adminRoadsFetched: state.adminRoads.fetched,
-    adminRoadsFetching: state.adminRoads.fetching,
-    crosswalkSet: state.crosswalk.set
+    adminInfoFetching: state.adminInfo.fetching,
+    adminRoadProperties: state.VProMMsAdminProperties.data,
+    adminRoadPropertiesFetched: state.VProMMsAdminProperties.fetched,
+    crosswalk: state.crosswalk,
+    crosswalkSet: state.crosswalk.set,
+    fieldRoads: state.fieldRoads.ids,
+    fieldFetched: state.fieldRoads.fetched
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _fetchVProMMsidsProperties: () => dispatch(fetchVProMMsidsProperties()),
+    _fetchAdminVProMMsProps: (idTest, level) => dispatch(fetchAdminVProMMsProps(idTest, level)),
     _fetchAdminRoads: (idTest, level) => dispatch(fetchAdminRoads(idTest, level)),
     _fetchFieldRoads: (idTest, level) => dispatch(fetchFieldRoads(idTest, level)),
     _fetchAdminInfo: (id, level) => dispatch(fetchAdminInfo(id, level)),
-    _removeVProMMsidsProperties: () => dispatch(removeVProMMsidsProperties()),
+    _removeAdminInfo: () => dispatch(removeAdminInfo()),
+    _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
     _setCrossWalk: () => dispatch(setCrossWalk())
   };
 }

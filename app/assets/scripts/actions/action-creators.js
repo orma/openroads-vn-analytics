@@ -76,6 +76,12 @@ export function fetchAdminInfo (id) {
   };
 }
 
+export function removeAdminInfo () {
+  return {
+    type: actions.REMOVE_ADMIN_INFO
+  };
+}
+
 // ////////////////////////////////////////////////////////////////
 //                        SEARCH RESULTS                         //
 // ////////////////////////////////////////////////////////////////
@@ -618,6 +624,37 @@ export function removeVProMMsidsProperties () {
   };
 }
 
+function requestVProMMsidsCount () {
+  return {
+    type: actions.REQUEST_VPROMMS_IDS_COUNT
+  };
+}
+
+function receieveVProMMsidsCount (json) {
+  return {
+    type: actions.RECEIVE_VPROMMS_IDS_COUNT,
+    json: json
+  };
+}
+
+export function fetchVProMMsIdsCount (level) {
+  return function (dispatch) {
+    dispatch(requestVProMMsidsCount());
+    let url = `${config.api}/admin/roads/total`;
+    if (level === 'district') {
+      url = `${url}?level=district`;
+    }
+    return fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      if (json.statusCode >= 400) {
+        throw new Error('Bad Request');
+      }
+      dispatch(receieveVProMMsidsCount(json));
+    });
+  };
+}
+
 // ////////////////////////////////////////////////////////////////
 //                         Explore Map                           //
 // ////////////////////////////////////////////////////////////////
@@ -726,9 +763,9 @@ function receiveFieldVProMMsids (json) {
   };
 }
 
-export function fetchFieldVProMMsids (json) {
+export function fetchFieldVProMMsIds (json) {
   return function (dispatch) {
-    dispatch(requestFieldVProMMsids);
+    dispatch(requestFieldVProMMsids());
     const url = `${config.api}/field/ids`;
     return fetch(url)
     .then(response => response.json())
@@ -737,6 +774,35 @@ export function fetchFieldVProMMsids (json) {
         throw new Error('Bad Response');
       }
       dispatch(receiveFieldVProMMsids(json));
+    });
+  };
+}
+
+function requestFieldVProMMsIdsCount () {
+  return {
+    type: actions.REQUEST_VPROMMS_FIELD_IDS_COUNT
+  };
+}
+
+function receiveFieldVProMMsIdsCount (json) {
+  return {
+    type: actions.RECEIVE_VPROMMS_FIELD_IDS_COUNT,
+    json: json
+  };
+}
+
+export function fetchFieldVProMsIdsCount (level) {
+  return function (dispatch) {
+    dispatch(requestFieldVProMMsIdsCount());
+    let url = `${config.api}/field/roads/total`;
+    url = (level === 'district') ? `${url}?level=district` : url;
+    return fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      if (json.statusCode >= 400) {
+        throw new Error('Bad Request');
+      }
+      dispatch(receiveFieldVProMMsIdsCount(json));
     });
   };
 }
@@ -800,6 +866,43 @@ export function fetchAdminRoads (json, level) {
       }
       dispatch(receiveAdminRoads(json));
     });
+  };
+}
+
+function requestAdminVProMMsProps () {
+  return {
+    type: actions.REQUEST_ADMIN_VPROMMS_PROPERTIES
+  };
+}
+
+function receiveAdminVProMMsProps (json) {
+  return {
+    type: actions.RECEIVE_ADMIN_VPROMMS_PROPERTIES,
+    json: json
+  };
+}
+
+export function fetchAdminVProMMsProps (json, level) {
+  return function (dispatch) {
+    dispatch(requestAdminVProMMsProps());
+    let url = `${config.api}/admin/roads/properties?province=${json[0]}`;
+    if (level === 'district') {
+      url = `${url}&district=${json[1]}`;
+    }
+    return fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      if (json.statusCode >= 400) {
+        throw new Error('Bad Request');
+      }
+      dispatch(receiveAdminVProMMsProps(json));
+    });
+  };
+}
+
+export function removeAdminVProMMsProps () {
+  return {
+    type: actions.REMOVE_ADMIN_VPROMMS_PROPERTIES
   };
 }
 
