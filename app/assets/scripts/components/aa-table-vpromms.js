@@ -136,8 +136,8 @@ const AATable = React.createClass({
           });
           const roadPropDropDown = [];
           _.forEach(this.props.propertiesData[i].properties, (prop, key, j) => {
-            roadPropDropDown.push(<dt key={`${prop}-key-${j}`}>{key}</dt>);
-            roadPropDropDown.push(<dd key={`${prop}-value-${j}`}>{prop}</dd>);
+            roadPropDropDown.push(<dt key={`${vpromm}-${key}-key`}>{key}</dt>);
+            roadPropDropDown.push(<dd key={`${vpromm}-${key}-value`}>{prop}</dd>);
           });
           return (
             <tr key={vpromm} className={classnames({'alt': i % 2})}>
