@@ -36,8 +36,8 @@ var AnalyticsIndex = React.createClass({
     const vprommsProvinces = Object.keys(this.props.crosswalk.province);
     const provinces = this.props.provinces.filter(province => vprommsProvinces.includes(province.id.toString()));
     // generate totals by adding road counts in VProMMsCount
-    let total = this.props.VProMMsCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 1);
-    let field = this.props.fieldIdCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 1);
+    let total = this.props.VProMMsCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
+    let field = this.props.fieldIdCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
     // { # of roads with field data, total # of roads }
     let accumulator = { field: total, total: field };
     const provinceData = _.map(provinces, (province, key) => {
@@ -72,7 +72,7 @@ var AnalyticsIndex = React.createClass({
         </div>
 
         <div className='a-main__status'>
-          <h2><strong>{completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({field.toLocaleString()} of {total.toLocaleString()})</h2>
+          <h2><strong>{completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({field} of {total})</h2>
           <div className='meter'>
             <div className='meter__internal' style={{width: `${completion}%`}}></div>
           </div>
