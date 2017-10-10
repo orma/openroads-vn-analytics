@@ -19,3 +19,19 @@ describe('makePaginationConfig', function () {
     expect(paginationConfig.pages).to.be.equal(19);
   });
 });
+
+describe('newIndex', function () {
+  var pageJump = 2;
+  var limit = 20;
+  var index = 100;
+  var newIndex = pagination.newIndex;
+  it('should return new index above current index', function () {
+    var newUpIndex = newIndex('up', pageJump, limit, index);
+    expect(newUpIndex).to.be.equal(140);
+  });
+  it('should return new index below current index', function () {
+    var newUpIndex = newIndex('down', pageJump, limit, index);
+    expect(newUpIndex).to.be.equal(60);
+  });
+});
+

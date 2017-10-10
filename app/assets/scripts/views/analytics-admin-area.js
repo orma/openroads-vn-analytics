@@ -2,6 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { t, getLanguage } from '../utils/i18n';
+import { makePaginationConfig } from '../utils/i18n';
 import { Link } from 'react-router';
 
 import AATable from '../components/aa-table-vpromms';
@@ -14,7 +15,8 @@ import {
   fetchAdminVProMMsProps,
   removeAdminVProMMsProps,
   removeAdminInfo,
-  setCrossWalk
+  setCrossWalk,
+  setPagination
 } from '../actions/action-creators';
 
 import config from '../config';
@@ -33,6 +35,7 @@ var AnalyticsAA = React.createClass({
     _removeAdminVProMMsProps: React.PropTypes.func,
     _removeVProMMsCount: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
+    _setOffset: React.PropTypes.func,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
     params: React.PropTypes.object,
@@ -44,7 +47,8 @@ var AnalyticsAA = React.createClass({
     adminRoadPropertiesFetched: React.PropTypes.bool,
     location: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
-    VProMMsCountFetched: React.PropTypes.bool
+    VProMMsCountFetched: React.PropTypes.bool,
+    offset: React.PropTypes.number
   },
 
   renderAdminChildren: function (children) {
@@ -85,6 +89,10 @@ var AnalyticsAA = React.createClass({
     if (!this.props.adminInfoFetched && nextProps.adminInfoFetched) {
       return this.getAdminData(nextProps);
     }
+    if (!this.props.VProMMsCountFetched && this.props.VProMMsCountFetched) {
+      const paginationConfig = makePaginationConfig(this.props.VProMMsCountFetched, 20);
+      this.props._setPagination(paginationConfig);
+    } 
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
@@ -174,6 +182,7 @@ var AnalyticsAA = React.createClass({
           </div>
           <div>
             {adminContent.total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
+            {/* {<Paginator offset={this.props.offset} pages={this.props.pages}/>} */}
           </div>
         </div>
       </div>
@@ -202,7 +211,8 @@ function selector (state) {
     fieldRoads: state.fieldRoads.ids,
     fieldFetched: state.fieldRoads.fetched,
     VProMMsCount: state.roadIdCount.counts,
-    VProMMsCountFetched: state.roadIdCount.fetched
+    VProMMsCountFetched: state.roadIdCount.fetched,
+    offset: state.offset.index
   };
 }
 
@@ -215,7 +225,8 @@ function dispatcher (dispatch) {
     _fetchAdminInfo: (id, level) => dispatch(fetchAdminInfo(id, level)),
     _removeAdminInfo: () => dispatch(removeAdminInfo()),
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
-    _setCrossWalk: () => dispatch(setCrossWalk())
+    _setCrossWalk: () => dispatch(setCrossWalk()),
+    _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig))
   };
 }
 

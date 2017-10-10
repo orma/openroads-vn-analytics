@@ -4,6 +4,7 @@
  * @func makePaginationConfig
  * @param numRoads {number} number of roads needing pagination
  * @param limit {number} limit to number of roads per page
+ * @return {object} new paginationConfig
  */
 exports.makePaginationConfig = function (numRoads, limit, page) {
   const index = page ? page * limit : 0;
@@ -13,4 +14,24 @@ exports.makePaginationConfig = function (numRoads, limit, page) {
     index: index,
     pages: Math.ceil(numRoads / limit)
   };
+};
+
+/**
+ * given the direction, number of pages changing, and current index, returns a new index
+ * @func newIndex
+ * @param pageDirection {string} direction (plus or minus) from current index to new index
+ * @param pageJump {number} number of pages between current page and next page
+ * @param limit {number} number of roads per page
+ * @param index {number} current index
+ * @return {number} new calculated index
+ */
+exports.newIndex = function (pageDirection, pageJump, limit, index) {
+  const absoluteJump = (pageJump * limit);
+  if (pageDirection === 'up') {
+    return index + absoluteJump;
+  } else if (pageDirection === 'down') {
+    return index - absoluteJump;
+  } else {
+    throw new Error('pageDirection must be set to either up or down.');
+  }
 };

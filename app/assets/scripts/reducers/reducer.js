@@ -770,12 +770,12 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
   return state;
 };
 
-const offset = function (state = {index: 0}, action) {
+const defaultPagination = {currentPage: 0, index: 0, pages: 0};
+
+const pagination = function (state = defaultPagination, action) {
   switch (action.type) {
-    case actions.SET_OFFET:
-      state = _.cloneDeep(state);
-      state.offset = action.offset;
-      break;
+    case actions.SET_PAGINATION:
+      return action.json;
   }
   return state;
 };
@@ -814,5 +814,5 @@ export default combineReducers({
   VProMMSidSourceGeoJSON,
   fieldRoads,
   fieldVProMMsids,
-  offset
+  pagination
 });
