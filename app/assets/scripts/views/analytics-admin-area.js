@@ -81,23 +81,16 @@ var AnalyticsAA = React.createClass({
     if (!this.props.adminInfoFetched && nextProps.adminInfoFetched) {
       return this.getAdminData(nextProps);
     }
-    // if switching between a district to its parent province,
-    // fetch that parent admin info.
     if (this.props.location.pathname !== nextProps.location.pathname) {
-      if (nextProps.params.aaId && nextProps.params.aaId.length === 3) {
-        this.props._removeAdminVProMMsProps();
-        this.props._removeAdminInfo();
-        return this.props._fetchAdminInfo(nextProps.params.aaId);
-      }
+      this.props._removeAdminVProMMsProps();
+      this.props._removeAdminInfo();
+      return this.props._fetchAdminInfo(nextProps.params.aaId);
     }
   },
 
   shouldComponentUpdate: function (nextProps) {
-    if (this.props.location.pathname !== nextProps.location.pathname) {
-      if (nextProps.params.aaId && nextProps.params.aaId.length === 3) {
-        return false;
-      }
-    }
+    // do not re-render component when location changes. wait until admin data fetched.
+    if (this.props.location.pathname !== nextProps.location.pathname) { return false; }
     return true;
   },
 
