@@ -30,7 +30,7 @@ const AATable = React.createClass({
     _removeAdminInfo: React.PropTypes.func,
     fetched: React.PropTypes.bool,
     properties: React.PropTypes.object,
-    propertiesData: React.PropTypes.object,
+    propertiesData: React.PropTypes.array,
     fieldRoads: React.PropTypes.array
   },
 

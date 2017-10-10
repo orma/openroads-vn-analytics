@@ -96,7 +96,7 @@ var AnalyticsAA = React.createClass({
   getAdminData: function (props) {
     const level = props.adminInfo.level;
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
-      [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId].id]
+      [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
     this.props._fetchAdminVProMMsProps(ids, level);
     this.props._fetchFieldRoads(ids, level);
