@@ -770,7 +770,7 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
   return state;
 };
 
-const defaultPagination = {currentPage: 0, currentIndex: 0, pages: 0};
+const defaultPagination = {currentPage: 0, currentIndex: 0, limit: 0, pages: 0};
 
 const pagination = function (state = defaultPagination, action) {
   switch (action.type) {

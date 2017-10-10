@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { t, getLanguage } from '../utils/i18n';
-import { makePaginationConfig } from '../utils/i18n';
+import { makePaginationConfig } from '../utils/pagination';
 import { Link } from 'react-router';
 
 import AATable from '../components/aa-table-vpromms';
@@ -92,8 +92,8 @@ var AnalyticsAA = React.createClass({
     if (!this.props.adminInfoFetched && nextProps.adminInfoFetched) {
       return this.getAdminData(nextProps);
     }
-    if (!this.props.VProMMsCountFetched && this.props.VProMMsCountFetched) {
-      const paginationConfig = makePaginationConfig(this.props.VProMMsCountFetched, 20);
+    if (!this.props.VProMMsCountFetched && nextProps.VProMMsCountFetched) {
+      const paginationConfig = makePaginationConfig(nextProps.VProMMsCount[0].total_roads, 20);
       this.props._setPagination(paginationConfig);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
@@ -215,7 +215,7 @@ function selector (state) {
     fieldFetched: state.fieldRoads.fetched,
     VProMMsCount: state.roadIdCount.counts,
     VProMMsCountFetched: state.roadIdCount.fetched,
-    offset: state.offset.index
+    pagination: state.pagination
   };
 }
 

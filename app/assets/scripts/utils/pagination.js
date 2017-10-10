@@ -12,6 +12,7 @@ exports.makePaginationConfig = function (numRoads, limit, page) {
   return {
     currentPage: page,
     currentIndex: index,
+    limit: limit,
     pages: Math.ceil(numRoads / limit)
   };
 };

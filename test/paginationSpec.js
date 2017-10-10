@@ -17,6 +17,7 @@ describe('makePaginationConfig', function () {
     expect(paginationConfig.currentIndex).to.be.equal(150);
     expect(paginationConfig.currentPage).to.be.equal(3);
     expect(paginationConfig.pages).to.be.equal(19);
+    expect(paginationConfig.limit).to.be.equal(50);
   });
 });
 
