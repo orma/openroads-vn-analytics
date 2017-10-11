@@ -115,6 +115,8 @@
 
 // Tables
 
+.table { margin-bottom: 2rem; }
+
 .table-properties-head {
   width: 16rem;
 }
@@ -204,4 +206,15 @@
     display: inline-block;
     margin-right: 1rem;
   };
+}
+
+// paginator
+
+.a-paginator {
+  text-align: center;
+  margin-bottom: 8rem;
+}
+
+.a-paginator-nav {
+  margin-top: 1rem;
 }

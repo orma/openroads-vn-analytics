@@ -5,7 +5,7 @@ import { t, getLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
 import { Link } from 'react-router';
 
-// import Paginator from '../components/paginator';
+import Paginator from '../components/paginator';
 import AATable from '../components/aa-table-vpromms';
 
 import {
@@ -69,6 +69,7 @@ var AnalyticsAA = React.createClass({
               this.props._removeAdminVProMMsProps();
               this.props._removeAdminInfo();
               this.props._fetchAdminInfo(child.id);
+              this.props._removeFieldVProMMsIdsCount();
             } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
           </li>
           );
@@ -105,6 +106,9 @@ var AnalyticsAA = React.createClass({
     }
     if (!this.props.fieldFetched && nextProps.fieldFetched) {
       this.getNextRoads(nextProps);
+    }
+    if (this.props.adminRoadProperties !== nextProps.adminRoadProperties) {
+      this.getAdminData(nextProps);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
@@ -198,6 +202,7 @@ var AnalyticsAA = React.createClass({
           </div>
           <div>
             {adminContent.total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
+            {this.props.pagination.pages > 1 ? <Paginator pagination={this.props.pagination} crosswalk={this.props.crosswalk} adminInfo={this.props.adminInfo} aaId={this.props.params.aaId} /> : <div/>}
           </div>
         </div>
       </div>
@@ -209,7 +214,6 @@ var AnalyticsAA = React.createClass({
     return (
       <div ref='a-admin-area' className='a-admin-area-show'>
         {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
-        {/* {this.props.pagination.pages > 1 ? <Paginator pagination={this.props.pagination} /> : <div/>} */}
       </div>
     );
   }

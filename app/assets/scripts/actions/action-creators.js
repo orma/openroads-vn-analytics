@@ -1046,10 +1046,10 @@ export function setPagination (paginationObject) {
   };
 }
 
-export function updatePagination (index, page) {
+export function updatePagination (newIndex, newPage) {
   return {
     type: actions.UPDATE_PAGINATION,
-    index: index,
-    page: page
+    newIndex: newIndex,
+    newPage: newPage
   };
 }

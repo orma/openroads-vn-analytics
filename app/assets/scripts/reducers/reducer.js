@@ -785,8 +785,8 @@ const pagination = function (state = defaultPagination, action) {
       return action.json;
     case actions.UPDATE_PAGINATION:
       state = _.cloneDeep(state);
-      state.currentIndex = action.json.currentIndex;
-      state.currentPage = action.json.currentPage;
+      state.currentIndex = action.newIndex;
+      state.currentPage = action.newPage;
   }
   return state;
 };

@@ -43,8 +43,9 @@ var AnalyticsIndex = React.createClass({
     // generate totals by adding road counts in VProMMsCount
     let total = this.props.VProMMsCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
     let field = this.props.fieldIdCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
+    let accumulator = { field: field, total: total };
+    const completion = (accumulator.field / accumulator.total);
     // { # of roads with field data, total # of roads }
-    let accumulator = { field: total, total: field };
     const provinceData = _.map(provinces, (province, key) => {
       const name = this.props.crosswalk.province[province.id].name;
       const id = this.props.crosswalk.province[province.id].id;
@@ -67,7 +68,6 @@ var AnalyticsIndex = React.createClass({
         percentageComplete
       };
     });
-    const completion = (accumulator.field / accumulator.total);
     return (
       <div>
         <div className='a-header'>

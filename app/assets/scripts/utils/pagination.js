@@ -8,7 +8,7 @@
  */
 exports.makePaginationConfig = function (numRoads, limit, page) {
   const index = page ? page * limit : 0;
-  page = page || 0;
+  page = page || 1;
   return {
     currentPage: page,
     currentIndex: index,
