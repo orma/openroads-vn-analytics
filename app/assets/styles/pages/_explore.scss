@@ -1,3 +1,7 @@
+/* ==========================================================================
+   Page: Explore
+   ========================================================================== */
+
 .analytics .site-header,
 .analytics-aa .site-header,
 .main .site-header,
@@ -12,41 +16,53 @@
   }
 }
 
-.explore {
-  .map-container {
-    height: calc(100vh - 3.5rem);
-    width: 100%;
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.map-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.map-panel {
+  position: absolute;
+  z-index: 10;
+  border-radius: $base-border-radius;
+  width: 16rem;
+  padding: $global-spacing;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba($base-color, 0.04);
+}
+
+.map-options {
+  top: $global-padding * 2;
+  right: $global-padding;
+
+  > *:last-child {
+    margin-bottom: 0;
   }
-  #map {
-    height: 100%;
-    width: 100%;
+}
+
+.map-options-checkbox {
+  float: left;
+  margin-right: $global-padding * 0.5;
+}
+
+.form__option {
+  margin: 0;
+  padding-left: $global-spacing * 1.25;
+
+  .form__option__ui {
+    top: 0;
+    height: 1rem;
+    width: 1rem;
   }
+}
 
-  .map-options {
-    top: $global-padding + 3.5rem;
-    right: $global-padding;
-
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .map-options-checkbox {
-    float: left;
-    margin-right: $global-padding * 0.5;
-  }
-
-  .form__option {
-    margin: 0;
-    padding-left: $global-spacing * 1.25;
-
-    .form__option__ui {
-      top: 0;
-      height: 1rem;
-      width: 1rem;
-    }
-  }
-
+.map-options {
   label {
     line-height: 1rem;
     font-size: 0.75rem;
@@ -89,45 +105,63 @@
     transition: all 0.24s ease 0s;
   }
 
-  .map-legend {
-    bottom: $global-padding * 2;
-    right: $global-padding;
+}
+
+.map-legend {
+  bottom: $global-padding * 2;
+  right: $global-padding;
+}
+
+.map-legend-title {
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.map-legend-scale {
+  height: 15px;
+  background-image: linear-gradient(to right, #8CCA1B, #DA251D);
+}
+
+.map-legend-label {
+  float: left;
+
+  &:last-child {
+    float: right;
   }
 
-  .map-legend-title {
-    font-weight: bold;
-    font-size: 0.75rem;
-  }
+  font-size: 0.75rem;
+}
 
-  .map-legend-scale {
-    height: 15px;
-    background-image: linear-gradient(to right, #8CCA1B, #DA251D);
-  }
+.map__legend--split {
+  font-size: 0.75rem;
 
-  .map-legend-label {
-    float: left;
-
-    &:last-child {
-      float: right;
-    }
-
-    font-size: 0.75rem;
-  }
-
-  .empty {
-    font-style: italic;
-    opacity: 0.64;
-    font-size: 0.875rem;
-    line-height: 1rem;
+  li {
+    width: 50%;
+    display: inline-block;
+    text-align: center;
   }
 }
 
-.map-panel {
-  position: absolute;
-  z-index: 10;
-  border-radius: $base-border-radius;
-  width: 16rem;
-  padding: $global-spacing;
-  background: #fff;
-  // box-shadow: 0 0 4px 4px rgba($base-color, 0.04);
+.legend__line {
+  display: inline-block;
+  margin-bottom: 0.5em;
+  width: 50%;
+  height: 3px;
+}
+
+.legend__line--primary {
+  opacity: 0.8;
+  background-color: #FCF009;
+}
+
+.legend__line--secondary {
+  opacity: 0.2;
+  background-color: #000;
+}
+
+
+.map-options-label {
+  line-height: 1rem;
+  font-size: 0.75rem;
+  min-height: auto;
 }
