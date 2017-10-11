@@ -147,7 +147,7 @@ const AATable = React.createClass({
         }
         return (
           <tr key={vpromm} className={classnames({'alt': i % 2})}>
-            <th>{ this.renderVProMMsLink(vpromm) }</th>
+            <th>{ vprommFieldInDB ? this.renderVProMMsLink(vpromm) : vpromm }</th>
             <td className={classnames({'added': vprommFieldInDB, 'not-added': !vprommFieldInDB})}>{ vprommFieldInDB ? this.renderFieldMapButtons(vprommFieldInDB, vpromm) : ''}</td>
             <td className='table-properties-cell'>
               <button type='button' className={propBtnClass} onClick={this.onPropertiesClick.bind(null, vpromm)}><span>{propBtnLabel}</span></button>

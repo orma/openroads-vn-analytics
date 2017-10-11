@@ -6,9 +6,9 @@ var logo = require('./logo');
 module.exports = {
   environment: 'production',
   consoleMessage: logo,
-  api: 'http://54.255.146.89',
+  api: 'http://api.openroads-vn.com',
   mbToken: 'pk.eyJ1Ijoib3BlbnJvYWRzIiwiYSI6InJ0aUQ2N3MifQ.R3hdFqriZr6kEUr-j_FYpg',
-  editorUrl: '//openroads-vn-id.s3-website-ap-southeast-1.amazonaws.com/',
-  roadNetTileLayerUrl: 'http://54.255.146.89:3000/dashboard/{z}/{x}/{y}.png',
+  editorUrl: '//editor.openroads-vn.com/',
+  roadNetTileLayerUrl: 'http://api.openroads-vn.com:3000/dashboard/{z}/{x}/{y}.png',
   provinceDumpBaseUrl: 'https://s3.amazonaws.com/openroads-vn-dumps/by-province-id/'
 };

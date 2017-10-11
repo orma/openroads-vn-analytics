@@ -1084,3 +1084,14 @@ export function updateClickedPage (page) {
     page: page
   };
 }
+
+// ////////////////////////////////////////////////////////////////
+//                           Language                            //
+// ////////////////////////////////////////////////////////////////
+
+export function setLanguage (lang) {
+  return {
+    type: actions.SET_LANGUAGE,
+    text: lang
+  };
+}

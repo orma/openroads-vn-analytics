@@ -1,5 +1,6 @@
 import React from 'react';
-import { t } from '../utils/i18n';
+import { connect } from 'react-redux';
+import { t, setLanguage } from '../utils/i18n';
 
 const MapOptions = React.createClass({
   displayName: 'MapOptions',
@@ -7,7 +8,14 @@ const MapOptions = React.createClass({
   propTypes: {
     layer: React.PropTypes.string,
     handleLayerChange: React.PropTypes.func,
-    handleShowNoVpromms: React.PropTypes.func
+    handleShowNoVpromms: React.PropTypes.func,
+    language: React.PropTypes.string
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.language !== nextProps.language) {
+      setLanguage(nextProps.language);
+    }
   },
 
   render: function () {
@@ -16,7 +24,7 @@ const MapOptions = React.createClass({
         <div className='form-group'>
           <label className='map-options-label form__option form__option--custom-checkbox' htmlFor='show-no-vpromms'>
             <input type='checkbox' name='show-no-vpromms' id='show-no-vpromms' value='show-no-vpromms' onChange={ e => this.props.handleShowNoVpromms(e) } />
-            <span className='form__option__text' data-title='These will have no properties.'>{t('Show road without vPromMMS ID')}</span>
+            <span className='form__option__text' data-title={`${t('These will have no properties')}.`}>{t('Show road without vPromMMS ID')}</span>
             <span className='form__option__ui'></span>
           </label>
         </div>
@@ -35,4 +43,10 @@ const MapOptions = React.createClass({
   }
 });
 
-module.exports = MapOptions;
+function selector (state) {
+  return {
+    language: state.language.current
+  };
+}
+
+module.exports = connect(selector)(MapOptions);

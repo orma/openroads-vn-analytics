@@ -802,6 +802,16 @@ const pagination = function (state = defaultPagination, action) {
   return state;
 };
 
+const language = function (state = {current: 'en'}, action) {
+  switch (action.type) {
+    case actions.SET_LANGUAGE:
+      state = _.cloneDeep(state);
+      state.current = action.text;
+      break;
+  }
+  return state;
+};
+
 export default combineReducers({
   admin,
   admins,
@@ -834,6 +844,7 @@ export default combineReducers({
   VProMMsidProperties,
   VProMMsAdminProperties,
   VProMMSidSourceGeoJSON,
+  language,
   fieldRoads,
   fieldVProMMsids,
   pagination

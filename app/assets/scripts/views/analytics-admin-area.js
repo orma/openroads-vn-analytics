@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
 import { connect } from 'react-redux';
-import { t, getLanguage } from '../utils/i18n';
+import { t, getLanguage, setLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
 import { makeIdTest, getAdminId, getAdminName } from '../utils/admin-level';
 import { Link } from 'react-router';
@@ -56,6 +56,7 @@ var AnalyticsAA = React.createClass({
     params: React.PropTypes.object,
     fieldRoads: React.PropTypes.array,
     fieldFetched: React.PropTypes.bool,
+    language: React.PropTypes.string,
     adminInfo: React.PropTypes.object,
     adminInfoFetched: React.PropTypes.bool,
     adminRoads: React.PropTypes.array,
@@ -65,7 +66,8 @@ var AnalyticsAA = React.createClass({
     location: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
-    pagination: React.PropTypes.object
+    pagination: React.PropTypes.object,
+    history: React.PropTypes.object
   },
 
   // before mount, get the admin info needed to make the list of child elements
@@ -124,7 +126,7 @@ var AnalyticsAA = React.createClass({
   makeAdminAnalyticsContent: function () {
     const level = this.props.params.aaId.length === 3 ? 'province' : 'district';
     const id = getAdminId(this.props.crosswalk, this.props.params.aaId, level);
-    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo);
+    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo)
     const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
@@ -171,14 +173,15 @@ var AnalyticsAA = React.createClass({
   renderDataDumpLinks: function (provinceId) {
     return (
       <div>
-        <h3 classNam='a-header'>Admin Chilren</h3>
-        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>Download Roads</a>
+        <h3 classNam='a-header'>{t('Admin Chilren')}</h3>
+        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>{t('Download Roads')}</a>
       </div>
     );
   },
 
   renderAnalyticsAdmin: function () {
     const adminContent = this.makeAdminAnalyticsContent();
+    setLanguage(this.props.language);
     return (
       <div>
         <div className='a-header'>
@@ -230,6 +233,7 @@ function selector (state) {
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
     fieldFetched: state.fieldRoads.fetched,
+    language: state.language.current,
     VProMMsCount: state.roadIdCount.counts,
     VProMMsCountFetched: state.roadIdCount.fetched,
     pagination: state.pagination
