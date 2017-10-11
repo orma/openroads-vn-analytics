@@ -512,6 +512,9 @@ const fieldVProMMsids = function (state = defaultFieldVProMMsids, action) {
       state.fetching = false;
       state.fetched = true;
       state.ids = action.json;
+      break;
+    case actions.REMOVE_VPROMMS_FIELD_IDS:
+      return defaultFieldVProMMsids;
   }
   return state;
 };
@@ -664,6 +667,8 @@ const roadIdCount = function (state = defaultVProMMsIdCount, action) {
       state.fetched = true;
       state.counts = action.json;
       break;
+    case actions.REMOVE_VPROMMS_IDS_COUNT:
+      return defaultVProMMsIdCount;
   }
   return state;
 };
@@ -766,6 +771,8 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
       state.fetched = true;
       state.ids = action.json;
       break;
+    case actions.REMOVE_FIELD_ROADS:
+      return defaultFieldRoads;
   }
   return state;
 };

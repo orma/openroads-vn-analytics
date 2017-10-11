@@ -5,6 +5,7 @@ import { t, getLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
 import { Link } from 'react-router';
 
+// import Paginator from '../components/paginator';
 import AATable from '../components/aa-table-vpromms';
 
 import {
@@ -14,6 +15,8 @@ import {
   fetchVProMMsIdsCount,
   fetchAdminVProMMsProps,
   removeAdminVProMMsProps,
+  removeFieldVProMMsIdsCount,
+  removeFieldRoads,
   removeAdminInfo,
   setCrossWalk,
   setPagination,
@@ -35,6 +38,8 @@ var AnalyticsAA = React.createClass({
     _removeAdminInfo: React.PropTypes.func,
     _removeAdminVProMMsProps: React.PropTypes.func,
     _removeVProMMsCount: React.PropTypes.func,
+    _removeFieldVProMMsIdsCount: React.PropTypes.func,
+    _removeFieldRoads: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
     _setOffset: React.PropTypes.func,
     _setPagination: React.PropTypes.func,
@@ -84,6 +89,8 @@ var AnalyticsAA = React.createClass({
   componentWillUnmount: function () {
     this.props._removeAdminVProMMsProps();
     this.props._removeAdminInfo();
+    this.props._removeFieldRoads();
+    this.props._removeFieldVProMMsIdsCount();
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -102,6 +109,8 @@ var AnalyticsAA = React.createClass({
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
+      this.props._removeFieldVProMMsIdsCount();
+      this.props._removeFieldRoads();
       return this.props._fetchAdminInfo(nextProps.params.aaId);
     }
   },
@@ -123,10 +132,12 @@ var AnalyticsAA = React.createClass({
 
   getNextRoads: function (props) {
     const level = props.adminInfo.level;
+    const limit = props.pagination.limit;
+    const offset = props.pagination.currentIndex;
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
       [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
-    this.props._fetchAdminVProMMsProps(ids, level, props.pagination.currentIndex, props.pagination.limit);
+    this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
   },
 
   makeAdminAnalyticsContent: function () {
@@ -187,7 +198,6 @@ var AnalyticsAA = React.createClass({
           </div>
           <div>
             {adminContent.total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
-            {/* {<Paginator pagination={this.props.pagination} />} */}
           </div>
         </div>
       </div>
@@ -199,10 +209,10 @@ var AnalyticsAA = React.createClass({
     return (
       <div ref='a-admin-area' className='a-admin-area-show'>
         {roadsFetched ? this.renderAnalyticsAdmin() : (<div/>)}
+        {/* {this.props.pagination.pages > 1 ? <Paginator pagination={this.props.pagination} /> : <div/>} */}
       </div>
     );
   }
-
 });
 
 function selector (state) {
@@ -223,12 +233,14 @@ function selector (state) {
 
 function dispatcher (dispatch) {
   return {
-    _fetchAdminVProMMsProps: (idTest, level) => dispatch(fetchAdminVProMMsProps(idTest, level)),
+    _fetchAdminVProMMsProps: (ids, level, limit, offset) => dispatch(fetchAdminVProMMsProps(ids, level, limit, offset)),
     _fetchAdminRoads: (idTest, level) => dispatch(fetchAdminRoads(idTest, level)),
     _fetchFieldRoads: (idTest, level) => dispatch(fetchFieldRoads(idTest, level)),
     _fetchVProMMsIdsCount: (idTest, level) => dispatch(fetchVProMMsIdsCount(idTest, level)),
     _fetchAdminInfo: (id, level) => dispatch(fetchAdminInfo(id, level)),
     _removeAdminInfo: () => dispatch(removeAdminInfo()),
+    _removeFieldRoads: () => dispatch(removeFieldRoads()),
+    _removeFieldVProMMsIdsCount: () => dispatch(removeFieldVProMMsIdsCount()),
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
     _setCrossWalk: () => dispatch(setCrossWalk()),
     _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig)),

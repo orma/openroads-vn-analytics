@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { t } from '../utils/i18n';
-import { fetchProvinces, fetchVProMMsIdsCount, fetchFieldVProMsIdsCount } from '../actions/action-creators';
+import { fetchProvinces, fetchVProMMsIdsCount, fetchFieldVProMsIdsCount, removeVProMMsIdsCount } from '../actions/action-creators';
 
 import AATable from '../components/aa-table-index';
 
@@ -14,6 +14,7 @@ var AnalyticsIndex = React.createClass({
     _fetchProvinces: React.PropTypes.func,
     _fetchFieldVProMsIdsCount: React.PropTypes.func,
     _fetchVProMMsIdsCount: React.PropTypes.func,
+    _removeVProMMsIdsCount: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
     provincesFetched: React.PropTypes.bool,
     provinces: React.PropTypes.array,
@@ -29,6 +30,10 @@ var AnalyticsIndex = React.createClass({
     this.props._fetchProvinces();
     this.props._fetchVProMMsIdsCount('province');
     this.props._fetchFieldVProMsIdsCount('province');
+  },
+
+  componentWillUnmount: function () {
+    this.props._removeVProMMsIdsCount();
   },
 
   renderAnalyticsIndex: function () {
@@ -107,7 +112,8 @@ function dispatcher (dispatch) {
   return {
     _fetchProvinces: () => dispatch(fetchProvinces()),
     _fetchVProMMsIdsCount: (level) => dispatch(fetchVProMMsIdsCount(level)),
-    _fetchFieldVProMsIdsCount: (level) => dispatch(fetchFieldVProMsIdsCount(level))
+    _fetchFieldVProMsIdsCount: (level) => dispatch(fetchFieldVProMsIdsCount(level)),
+    _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount())
   };
 }
 
