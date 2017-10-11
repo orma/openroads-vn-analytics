@@ -141,15 +141,6 @@ var AnalyticsAA = React.createClass({
     };
   },
 
-  renderDataDumpLinks: function (provinceId) {
-    return (
-      <div>
-        <h3 classNam='a-header'>Admin Chilren</h3>
-        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>Download Roads</a>
-      </div>
-    );
-  },
-
   renderAnalyticsAdmin: function () {
     const adminRoadIds = this.props.adminRoadProperties.map(road => road.id);
     const adminContent = this.makeAdminAnalyticsContent();
@@ -164,7 +155,7 @@ var AnalyticsAA = React.createClass({
             { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' }
           </div>
         </header>
-        
+
         {/* commune (district child) lists are not rendered */}
         { (adminContent.level !== 'district') ? this.renderAdminChildren(this.props.adminInfo.children) : '' }
 
