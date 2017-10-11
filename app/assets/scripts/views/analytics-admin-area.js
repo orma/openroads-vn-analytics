@@ -49,19 +49,22 @@ var AnalyticsAA = React.createClass({
 
   renderAdminChildren: function (children) {
     return (
-      <ul className='a-children'>
-        {children.map((child, i) => {
-          var childKey = `${child}-${i}`;
-          return (
-            <li key={childKey} ><Link onClick={(e) => {
-              this.props._removeAdminVProMMsProps();
-              this.props._removeAdminInfo();
-              this.props._fetchAdminInfo(child.id);
-            } } to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
-          </li>
-          );
-        })}
-      </ul>
+      <nav className='a-subnav'>
+        <h2>{t('Districts')}</h2>
+        <ul className='a-children'>
+          {children.map((child, i) => {
+            var childKey = `${child}-${i}`;
+            return (
+              <li key={childKey} ><Link onClick={(e) => {
+                this.props._removeAdminVProMMsProps();
+                this.props._removeAdminInfo();
+                this.props._fetchAdminInfo(child.id);
+              } } to={`/${getLanguage()}/analytics/${child.id}`} title={child.name_en}>{child.name_en}</Link>
+            </li>
+            );
+          })}
+        </ul>
+      </nav>
     );
   },
 
@@ -70,6 +73,12 @@ var AnalyticsAA = React.createClass({
   componentWillMount: function () {
     this.props._fetchAdminInfo(this.props.params.aaId);
     this.props._setCrossWalk();
+  },
+
+  renderDataDumpLinks: function (provinceId) {
+    return (
+      <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}><span>{t('Download Roads')}</span></a>
+    );
   },
 
   // on each unmount, drain properties and admin info objects so to
@@ -145,8 +154,8 @@ var AnalyticsAA = React.createClass({
     const adminRoadIds = this.props.adminRoadProperties.map(road => road.id);
     const adminContent = this.makeAdminAnalyticsContent();
     return (
-      <div>
-        <div className='a-header'>
+      <section>
+        <header className='a-header'>
           <div className='a-headline'>
             <h1>{adminContent.name}</h1>
           </div>
@@ -154,10 +163,12 @@ var AnalyticsAA = React.createClass({
           <div className='a-head-actions'>
             { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' }
           </div>
-        </div>
-        <div>
-          {/* commune (district child) lists are not rendered */}
-          { (adminContent.level !== 'district') ? this.renderAdminChildren(this.props.adminInfo.children) : '' }
+        </header>
+        
+        {/* commune (district child) lists are not rendered */}
+        { (adminContent.level !== 'district') ? this.renderAdminChildren(this.props.adminInfo.children) : '' }
+
+        <div className='a-body'>
           <div className='a-main__status'>
             <h2><strong>{adminContent.completionMainText}</strong>{adminContent.completionTailText}</h2>
             <div className='meter'>
@@ -168,7 +179,7 @@ var AnalyticsAA = React.createClass({
             {adminContent.total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
           </div>
         </div>
-      </div>
+      </section>
     );
   },
 
