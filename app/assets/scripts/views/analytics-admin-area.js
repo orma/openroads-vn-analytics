@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { t, getLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
+import { makeIdTest, getAdminId, getAdminName } from '../utils/admin-level';
 import { Link } from 'react-router';
 
 import Paginator from '../components/paginator';
@@ -67,20 +68,6 @@ var AnalyticsAA = React.createClass({
     pagination: React.PropTypes.object
   },
 
-  renderAdminChildren: function (children) {
-    return (
-      <ul className='a-children'>
-        {children.map((child, i) => {
-          var childKey = `${child}-${i}`;
-          return (
-            <li key={childKey} ><Link onClick={(e) => { setCrossWalk(); }}to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
-          </li>
-          );
-        })}
-      </ul>
-    );
-  },
-
   // before mount, get the admin info needed to make the list of child elements
   // as well as build the correct api queries in getAdminData
   componentWillMount: function () {
@@ -96,71 +83,48 @@ var AnalyticsAA = React.createClass({
   // use the aaId to get the initial field data
   componentWillReceiveProps: function (nextProps) {
     if (!this.props.crosswalkSet && nextProps.crosswalkSet) { this.getAdminData(nextProps); }
-    // if the adminInfo is about to be fetched and ready for render
-    // grab the admin properties and field data needed to fill out the tables
-    // if (!this.props.adminInfoFetched && nextProps.adminInfoFetched) {
-    //   return this.getAdminData(nextProps);
-    // }
+
     if (!this.props.VProMMsCountFetched && nextProps.VProMMsCountFetched) {
       const paginationConfig = makePaginationConfig(nextProps.VProMMsCount[0].total_roads, 20);
       this.props._setPagination(paginationConfig);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
+      if (nextProps.location.action === 'POP') { this.clearAdminData(); }
+      this.getAdminData(nextProps);
     }
-    //   return this.props._fetchAdminInfo(nextProps.params.aaId);
-    // }
-    // if (this.props.adminRoadProperties !== nextProps.adminRoadProperties) {
-    //   // adminInfo is needed for getting the relevant data;
-    //   if (nextProps.adminInfoFetched) { this.getAdminData(nextProps); }
-    // }
-  },
-
-  shouldComponentUpdate: function (nextProps) {
-    if (nextProps.location.action === 'PUSH') {
-      if (nextProps.params.aaId.length === 5) { return true; }
-      return false;
-    }
-    // do not re-render component when location changes. wait until admin data fetched.
-    if (this.props.location.pathname !== nextProps.location.pathname) { return false; }
-    return true;
   },
 
   clearAdminData: function () {
     this.props._removeAdminVProMMsProps();
-    this.props._removeAdminInfo();
     this.props._removeFieldRoads();
     this.props._removeAdminRoads();
     this.props._removeFieldVProMMsIdsCount();
     this.props._removeVProMMsIdsCount();
-    this.props._removeCrosswalk();
   },
 
   getAdminData: function (props) {
-    const level = 'province';
-    let ids = [props.crosswalk[level][props.params.aaId].id];
-    this.props._fetchVProMMsIdsCount(level, ids);
-    this.props._fetchFieldRoads(ids, level);
-    this.props._fetchAdminRoads(ids, level, 20, 0);
-    this.props._fetchAdminVProMMsProps(ids, level, 20, 0);
+    const level = props.params.aaId.length === 3 ? 'province' : 'district';
+    const idTest = makeIdTest(props.crosswalk, props.adminInfo, props.params.aaId, level);
+    this.props._fetchVProMMsIdsCount(level, idTest);
+    this.props._fetchFieldRoads(idTest, level);
+    this.props._fetchAdminRoads(idTest, level, 20, 0);
+    this.props._fetchAdminVProMMsProps(idTest, level, 20, 0);
     this.props._fetchAdminInfo(props.params.aaId);
+    this.props._removeAdminInfo();
   },
 
   getNextRoads: function (props) {
     const level = props.adminInfo.level;
     const limit = props.pagination.limit;
     const offset = props.pagination.currentIndex;
-    let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
-      [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
-    );
-
-    this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
+    const idTest = makeIdTest(props.crosswalk, props.adminInfo, props.params.aaId);
+    this.props._fetchAdminVProMMsProps(idTest, level, limit, offset);
   },
 
   makeAdminAnalyticsContent: function () {
-    const level = 'province';
-    const id = this.props.crosswalk[level][this.props.params.aaId].id;
-    const name = this.props.crosswalk[level][this.props.params.aaId].name;
-    // const name = (level === 'district') ? this.props.adminInfo.name_en : this.props.crosswalk[level][this.props.params.aaId].name;
+    const level = this.props.params.aaId.length === 3 ? 'province' : 'district';
+    const id = getAdminId(this.props.crosswalk, this.props.params.aaId, level);
+    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo);
     const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
@@ -179,6 +143,29 @@ var AnalyticsAA = React.createClass({
       id: id,
       name: name
     };
+  },
+
+  renderAdminChildren: function (children, adminContent) {
+    if (adminContent.level === 'district') {
+      return (
+        <div/>
+      );
+    }
+    if (this.props.adminInfoFetched) {
+      return (
+        <ul className='a-children'>
+          {children.map((child, i) => {
+            var childKey = `${child}-${i}`;
+            return (
+              <li key={childKey} ><Link onClick={(e) => { this.clearAdminData(); this.props._setCrossWalk(); }}to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
+            </li>
+            );
+          })}
+        </ul>
+      );
+    } else {
+      return (<div>Loading Child Admins</div>);
+    }
   },
 
   renderDataDumpLinks: function (provinceId) {
@@ -200,12 +187,12 @@ var AnalyticsAA = React.createClass({
           </div>
           {/* completion suggests data exists, in whcih case there is data available for download */}
           <div className='a-head-actions'>
-            {/* { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' } */}
+            { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' }
           </div>
         </div>
         <div>
           {/* commune (district child) lists are not rendered */}
-          { (this.props.adminInfoFetched && (adminContent.level !== 'district')) ? this.renderAdminChildren(this.props.adminInfo.children) : (<div>Loading Child Admins</div>) }
+          { this.renderAdminChildren(this.props.adminInfo.children, adminContent) }
           <div className='a-main__status'>
             <h2><strong>{adminContent.completionMainText}</strong>{adminContent.completionTailText}</h2>
             <div className='meter'>

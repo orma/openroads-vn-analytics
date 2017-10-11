@@ -1056,7 +1056,7 @@ export function setCrossWalk () {
 export function removeCrosswalk () {
   return {
     type: actions.REMOVE_CROSSWALK
-  }
+  };
 }
 
 // ////////////////////////////////////////////////////////////////

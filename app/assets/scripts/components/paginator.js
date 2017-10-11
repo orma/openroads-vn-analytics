@@ -2,13 +2,14 @@
 import React from 'react';
 import c from 'classnames';
 import { connect } from 'react-redux';
-import { updateClickedPage, updatePagination, fetchAdminVProMMsProps } from '../actions/action-creators';
+import { updateClickedPage, updatePagination, fetchAdminRoads, fetchAdminVProMMsProps } from '../actions/action-creators';
 
 var Paginator = React.createClass({
 
   displayName: 'Paginator',
 
   propTypes: {
+    _fetchAdminRoads: React.PropTypes.func,
     _fetchAdminVProMMsProps: React.PropTypes.func,
     _updateClickedPage: React.PropTypes.func,
     _updatePagination: React.PropTypes.func,
@@ -67,6 +68,7 @@ var Paginator = React.createClass({
         [this.props.crosswalk['province'][this.props.adminInfo.parent.id].id, this.props.crosswalk[level][this.props.aaId]]
     );
     this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
+    this.props._fetchAdminRoads(ids, level, limit, offset);
   },
 
   render: function () {
@@ -85,6 +87,7 @@ function selector (state) { return {}; }
 function dispatcher (dispatch) {
   return {
     _fetchAdminVProMMsProps: (ids, level, limit, offset) => dispatch(fetchAdminVProMMsProps(ids, level, limit, offset)),
+    _fetchAdminRoads: (ids, level, limit, offset) => dispatch(fetchAdminRoads(ids, level, limit, offset)),
     _updateClickedPage: (page) => dispatch(updateClickedPage(page)),
     _updatePagination: (index, page) => dispatch(updatePagination(index, page))
   };
