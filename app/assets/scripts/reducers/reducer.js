@@ -627,6 +627,8 @@ const provinces = function (state = defaultProvinces, action) {
       state.fetched = true;
       state.data = action.json;
       break;
+    case actions.REMOVE_PROVINCES:
+      return defaultProvinces;
   }
   return state;
 };
@@ -645,6 +647,8 @@ const crosswalk = function (state = defaultCrossWalk, action) {
       state.district = ADMIN_MAP.district;
       state.set = true;
       break;
+    case actions.REMOVE_CROSSWALK:
+      return defaultCrossWalk;
   }
   return state;
 };
@@ -749,6 +753,8 @@ const adminRoads = function (state = defaultAdminRoads, action) {
       state.fetching = false;
       state.ids = action.json;
       break;
+    case actions.REMOVE_ADMIN_ROADS:
+      return defaultAdminRoads;
   }
   return state;
 };

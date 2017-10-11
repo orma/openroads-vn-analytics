@@ -3,7 +3,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { t } from '../utils/i18n';
-import { fetchProvinces, fetchVProMMsIdsCount, fetchFieldVProMsIdsCount, removeVProMMsIdsCount } from '../actions/action-creators';
+import {
+  fetchProvinces,
+  fetchVProMMsIdsCount,
+  fetchFieldVProMsIdsCount,
+  removeVProMMsIdsCount,
+  removeProvinces,
+  removeCrosswalk,
+  setCrossWalk
+} from '../actions/action-creators';
 
 import AATable from '../components/aa-table-index';
 
@@ -15,10 +23,13 @@ var AnalyticsIndex = React.createClass({
     _fetchFieldVProMsIdsCount: React.PropTypes.func,
     _fetchVProMMsIdsCount: React.PropTypes.func,
     _removeVProMMsIdsCount: React.PropTypes.func,
+    _removeCrosswalk: React.PropTypes.func,
+    _removeProvinces: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
     provincesFetched: React.PropTypes.bool,
     provinces: React.PropTypes.array,
     crosswalk: React.PropTypes.object,
+    crosswalkSet: React.PropTypes.bool,
     params: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
@@ -28,25 +39,27 @@ var AnalyticsIndex = React.createClass({
 
   componentWillMount: function () {
     this.props._fetchProvinces();
+    this.props._setCrossWalk();
     this.props._fetchVProMMsIdsCount('province');
     this.props._fetchFieldVProMsIdsCount('province');
   },
 
   componentWillUnmount: function () {
     this.props._removeVProMMsIdsCount();
+    this.props._removeCrosswalk();
+    this.props._removeProvinces();
   },
 
-  renderAnalyticsIndex: function () {
+  componentWillReceiveProps: function (nextProps) {
+    if (!this.props.crosswalkSet === nextProps.crosswalkSet) { return; }
+  },
+
+  makeProvinceData: function () {
     // pluck provinces w/vpromms data from provinces fetched from database.
     const vprommsProvinces = Object.keys(this.props.crosswalk.province);
     const provinces = this.props.provinces.filter(province => vprommsProvinces.includes(province.id.toString()));
-    // generate totals by adding road counts in VProMMsCount
-    let total = this.props.VProMMsCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
-    let field = this.props.fieldIdCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
-    let accumulator = { field: field, total: total };
-    const completion = (accumulator.field / accumulator.total);
     // { # of roads with field data, total # of roads }
-    const provinceData = _.map(provinces, (province, key) => {
+    return _.map(provinces, (province, key) => {
       const name = this.props.crosswalk.province[province.id].name;
       const id = this.props.crosswalk.province[province.id].id;
       const route = province.id;
@@ -68,6 +81,18 @@ var AnalyticsIndex = React.createClass({
         percentageComplete
       };
     });
+  },
+
+  makeCompletionContent: function () {
+    // generate totals by adding road counts in VProMMsCount
+    let total = this.props.VProMMsCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
+    let field = this.props.fieldIdCount.reduce((accum, countObj) => { return accum + Number(countObj.total_roads); }, 0);
+    let accumulator = { field: field, total: total };
+    return { accumulator: accumulator, completion: (accumulator.field / accumulator.total) };
+  },
+
+  renderAnalyticsIndex: function () {
+    const completionContent = this.makeCompletionContent();
     return (
       <div>
         <div className='a-header'>
@@ -77,20 +102,20 @@ var AnalyticsIndex = React.createClass({
         </div>
 
         <div className='a-main__status'>
-          <h2><strong>{completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({field} of {total})</h2>
+          <h2><strong>{completionContent.completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({completionContent.accumulator.field} of {completionContent.accumulator.total})</h2>
           <div className='meter'>
-            <div className='meter__internal' style={{width: `${completion}%`}}></div>
+            <div className='meter__internal' style={{width: `${completionContent.completion}%`}}></div>
           </div>
         </div>
         <div>
-          <AATable data={provinceData} crosswalk={this.props.crosswalk} />
+          {this.props.provincesFetched ? <AATable data={this.makeProvinceData()} crosswalk={this.props.crosswalk} /> : (<div>Loading Tables</div>)}
         </div>
       </div>
     );
   },
 
   render: function () {
-    return this.props.provincesFetched ? this.renderAnalyticsIndex() : (<div/>);
+    return (this.props.VProMMsCountFetched && this.props.fieldCountsFetched) ? this.renderAnalyticsIndex() : (<div/>);
   }
 });
 
@@ -104,7 +129,9 @@ function selector (state) {
     fieldIdCount: state.fieldIdCount.counts,
     fieldCountsFetched: state.fieldIdCount.fetched,
     VProMMsCount: state.roadIdCount.counts,
-    VProMMsCountFetched: state.VProMMsidProperties.fetched
+    VProMMsCountFetched: state.roadIdCount.fetched,
+    crosswalk: state.crosswalk,
+    crosswalkSet: state.crosswalk.set
   };
 }
 
@@ -113,7 +140,10 @@ function dispatcher (dispatch) {
     _fetchProvinces: () => dispatch(fetchProvinces()),
     _fetchVProMMsIdsCount: (level) => dispatch(fetchVProMMsIdsCount(level)),
     _fetchFieldVProMsIdsCount: (level) => dispatch(fetchFieldVProMsIdsCount(level)),
-    _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount())
+    _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount()),
+    _removeCrosswalk: () => dispatch(removeCrosswalk()),
+    _removeProvinces: () => dispatch(removeProvinces()),
+    _setCrossWalk: () => dispatch(setCrossWalk())
   };
 }
 
