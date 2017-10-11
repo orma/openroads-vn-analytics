@@ -777,7 +777,7 @@ const fieldRoads = function (state = defaultFieldRoads, action) {
   return state;
 };
 
-const defaultPagination = {currentPage: 0, currentIndex: 0, limit: 0, pages: 0};
+const defaultPagination = {currentPage: 0, currentIndex: 0, limit: 0, pages: 0, clickedPage: 0};
 
 const pagination = function (state = defaultPagination, action) {
   switch (action.type) {
@@ -787,6 +787,11 @@ const pagination = function (state = defaultPagination, action) {
       state = _.cloneDeep(state);
       state.currentIndex = action.newIndex;
       state.currentPage = action.newPage;
+      break;
+    case actions.UPDATE_PAGINATION_CLICKED_PAGE:
+      state = _.cloneDeep(state);
+      state.clickedPage = action.page;
+      break;
   }
   return state;
 };

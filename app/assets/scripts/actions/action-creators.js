@@ -1053,3 +1053,10 @@ export function updatePagination (newIndex, newPage) {
     newPage: newPage
   };
 }
+
+export function updateClickedPage (page) {
+  return {
+    type: actions.UPDATE_PAGINATION_CLICKED_PAGE,
+    page: page
+  };
+}

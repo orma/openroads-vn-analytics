@@ -2,7 +2,7 @@
 import React from 'react';
 import c from 'classnames';
 import { connect } from 'react-redux';
-import { updatePagination, fetchAdminVProMMsProps } from '../actions/action-creators';
+import { updateClickedPage, updatePagination, fetchAdminVProMMsProps } from '../actions/action-creators';
 
 var Paginator = React.createClass({
 
@@ -10,6 +10,7 @@ var Paginator = React.createClass({
 
   propTypes: {
     _fetchAdminVProMMsProps: React.PropTypes.func,
+    _updateClickedPage: React.PropTypes.func,
     _updatePagination: React.PropTypes.func,
     aaId: React.PropTypes.string,
     adminInfo: React.PropTypes.object,
@@ -21,6 +22,7 @@ var Paginator = React.createClass({
     let pages = [];
     let nav = [];
     let numPages = this.props.pagination.pages;
+    const clickedPage = this.props.pagination.clickedPage;
     const currentPage = this.props.pagination.currentPage;
     const limit = this.props.pagination.limit;
     // if distance between last and current page is more than 10, set lastPage to currentPage + 10;
@@ -39,10 +41,11 @@ var Paginator = React.createClass({
     for (var i = currentPage - 1; i < lastPage; i++) {
       const thisPage = i + 1;
       const thisIndex = limit * thisPage;
+      const buttonClass = c('bttn', 'bttn-base-light', {'active': (thisPage === clickedPage)});
       // pages inside previous/next buttons; only update the table roads
       pages.push(
         <li key={`page-${thisPage}-index-${thisIndex}`}>
-          <button className='bttn bttn-base-light' onClick={(e) => { this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
+          <button className={buttonClass} onClick={(e) => { this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
         </li>
       );
     }
@@ -84,6 +87,7 @@ function selector (state) { return {}; }
 function dispatcher (dispatch) {
   return {
     _fetchAdminVProMMsProps: (ids, level, limit, offset) => dispatch(fetchAdminVProMMsProps(ids, level, limit, offset)),
+    _updateClickedPage: (page) => dispatch(updateClickedPage(page)),
     _updatePagination: (index, page) => dispatch(updatePagination(index, page))
   };
 }
