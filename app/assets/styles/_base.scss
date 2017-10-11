@@ -696,9 +696,9 @@ a:active{
   }
 
   .aa-main {
-    // > .inner {
-    //   margin-bottom: 2rem;
-    // }
+    > .inner {
+      margin-bottom: 2rem;
+    }
 
     .aa-map-wrapper {
       margin: 0.5rem 0;

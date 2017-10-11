@@ -159,9 +159,28 @@
   background-color: #000;
 }
 
-
 .map-options-label {
   line-height: 1rem;
   font-size: 0.75rem;
   min-height: auto;
+}
+
+.map-options {
+  .empty {
+    font-style: italic;
+    opacity: 0.64;
+    font-size: 0.875rem;
+    line-height: 1rem;
+  }
+}
+
+.map__panel--selected {
+  margin: 0.75em 0 0.5em;
+  p {
+    font-weight: bold;
+  }
+}
+
+.map__panel--form .bttn {
+  margin-top: 0.25em;
 }
