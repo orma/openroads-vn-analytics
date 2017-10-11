@@ -7,7 +7,8 @@ import c from 'classnames';
 import { connect } from 'react-redux';
 import {
   setSearchType,
-  showSearch
+  showSearch,
+  setLanguage
 } from '../actions/action-creators';
 import { t, getAvailableLanguages, getLanguage } from '../utils/i18n';
 import { Link } from 'react-router';
@@ -15,14 +16,15 @@ var SiteHeader = React.createClass({
   displayName: 'SiteHeader',
 
   propTypes: {
+    _showSearch: React.PropTypes.func,
+    _setSearchType: React.PropTypes.func,
+    _setLanguage: React.PropTypes.func,
     fetchSearchResults: React.PropTypes.func,
     cleanSearchResults: React.PropTypes.func,
     routes: React.PropTypes.array,
     search: React.PropTypes.object,
     pathname: React.PropTypes.string,
-    _setSearchType: React.PropTypes.func,
     searchType: React.PropTypes.string,
-    _showSearch: React.PropTypes.func,
     displaySearch: React.PropTypes.bool
   },
 
@@ -158,6 +160,7 @@ var SiteHeader = React.createClass({
                       <li key={l.key}>
                         <Link to={url}
                           title={t('Select language')}
+                          onClick={(e) => { this.props._setLanguage(l.key); }}
                           className={cl} data-hook='dropdown:close'>
                           {l.name}
                         </Link>
@@ -210,7 +213,8 @@ function selector (state) {
 function dispatcher (dispatch) {
   return {
     _showSearch: (bool) => dispatch(showSearch(bool)),
-    _setSearchType: (searchType) => dispatch(setSearchType(searchType))
+    _setSearchType: (searchType) => dispatch(setSearchType(searchType)),
+    _setLanguage: (lang) => dispatch(setLanguage(lang))
   };
 }
 

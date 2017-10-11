@@ -1058,5 +1058,13 @@ export function updateClickedPage (page) {
   return {
     type: actions.UPDATE_PAGINATION_CLICKED_PAGE,
     page: page
+
+//                           Language                            //
+// ////////////////////////////////////////////////////////////////
+
+export function setLanguage (lang) {
+  return {
+    type: actions.SET_LANGUAGE,
+    text: lang
   };
 }

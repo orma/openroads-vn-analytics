@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
 import { connect } from 'react-redux';
-import { t, getLanguage } from '../utils/i18n';
+import { t, getLanguage, setLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
 import { Link } from 'react-router';
 
@@ -50,6 +50,7 @@ var AnalyticsAA = React.createClass({
     params: React.PropTypes.object,
     fieldRoads: React.PropTypes.array,
     fieldFetched: React.PropTypes.bool,
+    language: React.PropTypes.string,
     adminInfo: React.PropTypes.object,
     adminInfoFetched: React.PropTypes.bool,
     adminRoadProperties: React.PropTypes.array,
@@ -57,7 +58,8 @@ var AnalyticsAA = React.createClass({
     location: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
-    pagination: React.PropTypes.object
+    pagination: React.PropTypes.object,
+    history: React.PropTypes.object
   },
 
   renderAdminChildren: function (children) {
@@ -110,6 +112,18 @@ var AnalyticsAA = React.createClass({
       this.getNextRoads(nextProps);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
+      const sameLanguage = (this.props.params.lang === nextProps.params.lang);
+      const sameAdmin = (this.props.params.aaId === nextProps.params.aaId);
+      // if back button is pressed right after the langauge was updated,
+      // go back to the parent admin, not the same admin w/different language per the default.
+      if (nextProps.location.action === 'POP') {
+        if (sameAdmin && !sameLanguage) {
+          const level = this.props.params.aaId.length === 3 ? 'province' : 'district';
+          const path = (level === 'district') ? `/${getLanguage()}/analytics/${this.props.adminInfo.parent.id}` : `/${getLanguage()}/analytics/`;
+          this.props.history.push(path);
+        }
+      }
+      if (!sameLanguage) { return setLanguage(nextProps.language); }
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
       this.props._removeFieldVProMMsIdsCount();
@@ -129,7 +143,12 @@ var AnalyticsAA = React.createClass({
       return false;
     }
     // do not re-render component when location changes. wait until admin data fetched.
-    if (this.props.location.pathname !== nextProps.location.pathname) { return false; }
+    if (this.props.location.pathname !== nextProps.location.pathname) {
+      const sameLanguage = (this.props.params.lang === nextProps.params.lang);
+      // if changing language in the hash, update to translate page.
+      if (!sameLanguage) { return true; }
+      return false;
+    }
     return true;
   },
 
@@ -154,7 +173,7 @@ var AnalyticsAA = React.createClass({
 
   makeAdminAnalyticsContent: function () {
     const level = this.props.adminInfo.level;
-    const id = this.props.crosswalk[level][this.props.params.aaId].id;
+    const id = (level === 'district') ? this.props.crosswalk[level][this.props.params.aaId] : this.props.crosswalk[level][this.props.params.aaId].id;
     const name = (level === 'district') ? this.props.adminInfo.name_en : this.props.crosswalk[level][this.props.params.aaId].name;
     const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
@@ -179,8 +198,8 @@ var AnalyticsAA = React.createClass({
   renderDataDumpLinks: function (provinceId) {
     return (
       <div>
-        <h3 classNam='a-header'>Admin Chilren</h3>
-        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>Download Roads</a>
+        <h3 classNam='a-header'>{t('Admin Chilren')}</h3>
+        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>{t('Download Roads')}</a>
       </div>
     );
   },
@@ -188,6 +207,7 @@ var AnalyticsAA = React.createClass({
   renderAnalyticsAdmin: function () {
     const adminRoadIds = this.props.adminRoadProperties.map(road => road.id);
     const adminContent = this.makeAdminAnalyticsContent();
+    setLanguage(this.props.language);
     return (
       <div>
         <div className='a-header'>
@@ -237,6 +257,7 @@ function selector (state) {
     crosswalkSet: state.crosswalk.set,
     fieldRoads: state.fieldRoads.ids,
     fieldFetched: state.fieldRoads.fetched,
+    language: state.language.current,
     VProMMsCount: state.roadIdCount.counts,
     VProMMsCountFetched: state.roadIdCount.fetched,
     pagination: state.pagination

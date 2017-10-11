@@ -1,12 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import lineColors from '../utils/line-colors';
-import { t } from '../utils/i18n';
+import { t, setLanguage } from '../utils/i18n';
 
 const MapLegend = React.createClass({
   displayName: 'MapLegend',
 
   propTypes: {
-    layer: React.PropTypes.string
+    layer: React.PropTypes.string,
+    language: React.PropTypes.string
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.language !== nextProps.language) {
+      setLanguage(nextProps.language);
+    }
   },
 
   render: function () {
@@ -28,7 +36,6 @@ const MapLegend = React.createClass({
       bestColorLabel = stops[0][0];
       worstColorLabel = stops[stops.length - 1][0];
     }
-
     return (
       <div className='map-legend map-panel'>
         <p className='map-legend-title'>{ title }</p>
@@ -55,4 +62,10 @@ const MapLegend = React.createClass({
   }
 });
 
-module.exports = MapLegend;
+function selector (state) {
+  return {
+    language: state.language.current
+  };
+}
+
+module.exports = connect(selector)(MapLegend);
