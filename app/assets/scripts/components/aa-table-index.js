@@ -92,7 +92,7 @@ const AATable = React.createClass({
         {_.map(sorted, (province, i) => {
           return (
             <tr key={`province-${province.id}`} className={classnames('collecticon-sort-asc', {'alt': i % 2})}>
-              <td><Link onClick={(e) => { this.props._setAdmin({ id: province.id, name: province.name }); } } to={`${getLanguage()}/analytics/${province.route}`}>{province.name}</Link></td>
+              <th><Link onClick={(e) => { this.props._setAdmin({ id: province.id, name: province.name }); } } to={`${getLanguage()}/analytics/${province.route}`}>{province.name}</Link></th>
               <td>{province.field}</td>
               <td>{province.total}</td>
               <td>

@@ -69,23 +69,25 @@ var AnalyticsIndex = React.createClass({
       };
     });
     return (
-      <div>
-        <div className='a-header'>
+      <section>
+        <header className='a-header'>
           <div className='a-headline'>
             <h1>{t('VProMMS Edits By Province')}</h1>
           </div>
-        </div>
+        </header>
 
-        <div className='a-main__status'>
-          <h2><strong>{completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({field} of {total})</h2>
-          <div className='meter'>
-            <div className='meter__internal' style={{width: `${completion}%`}}></div>
+        <div className='a-body'>
+          <div className='a-main__status'>
+            <h2><strong>{completion.toFixed(2)}%</strong> {t('of VProMMS Ids have field data collected')} ({field} of {total})</h2>
+            <div className='meter'>
+              <div className='meter__internal' style={{width: `${completion}%`}}></div>
+            </div>
+          </div>
+          <div>
+            <AATable data={provinceData} crosswalk={this.props.crosswalk} />
           </div>
         </div>
-        <div>
-          <AATable data={provinceData} crosswalk={this.props.crosswalk} />
-        </div>
-      </div>
+      </section>
     );
   },
 

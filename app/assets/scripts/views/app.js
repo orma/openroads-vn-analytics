@@ -20,7 +20,7 @@ var App = React.createClass({
   render: function () {
     const pageClass = _.get(_.last(this.props.routes), 'pageClass', '');
     return (
-      <div className={pageClass}>
+      <div className={'site-canvas-inner ' + pageClass}>
         <SiteHeader
           pathname={this.props.location.pathname}
           fetchSearchResults={this.props._fetchSearchResults}

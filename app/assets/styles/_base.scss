@@ -65,13 +65,7 @@ body {
   margin-left: 0.25rem;
 }
 
-#main-frame {
-  border: none;
-  display: block;
-  position: absolute;
-  height: calc(100% - 3.5rem); /* 100% - height header */
-  width: 100%;
-}
+
 /* Links
    ========================================================================== */
 
@@ -80,6 +74,7 @@ a {
   color: $secondary-color;
   transition: opacity 0.2s ease 0s;
   transform: translateZ(0);
+  text-decoration: none;
 }
 
 a:visited {
@@ -137,6 +132,7 @@ a:active{
   width: 100%;
 }
 
+
 /* Rows
    ========================================================================== */
 
@@ -144,10 +140,12 @@ a:active{
   @extend .clearfix;
   padding-left: $global-padding;
   padding-right: $global-padding;
+
   @include media(small-up) {
     padding-left: $global-padding*2;
     padding-right: $global-padding*2;
   }
+
   @include media(xlarge-up) {
     padding-left: $global-padding*4;
     padding-right: $global-padding*4;
@@ -547,14 +545,25 @@ a:active{
   }
 }
 
+
 /* Body
    ========================================================================== */
 
 .site-body {
+  position: relative;
+  flex: 1;
+
   .inner {
     @extend .row;
     @extend .row--centered;
   }
+}
+
+.site-canvas-inner {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
 
 .page {
@@ -687,7 +696,6 @@ a:active{
   }
 
   .aa-main {
-    // border-bottom: 2px solid $flat-shadow-rgba;
     > .inner {
       margin-bottom: 2rem;
     }
