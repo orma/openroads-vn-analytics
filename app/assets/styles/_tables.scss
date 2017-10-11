@@ -32,10 +32,12 @@
         border-left: none;
       }
     }
+
     tbody {
       tr {
         height: 2.75rem;
-        border-bottom: 1px solid rgb(220, 220, 220);;
+        border-bottom: 1px solid rgb(220, 220, 220);
+
         &:last-child td {
           border-bottom: none;
         }
@@ -43,12 +45,11 @@
 
       td {
         font-weight: $base-font-light;
-        :first-child {
-          border-left: none;
-        }
-        a {
-          color: $info-color;
-        }
+
+        // &:first-child {
+        //   border-left: none;
+        // }
+
         &.added {
           color: $info-color;
         }

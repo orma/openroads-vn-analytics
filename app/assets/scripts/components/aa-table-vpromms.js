@@ -94,9 +94,9 @@ const AATable = React.createClass({
 
   renderFieldMapButtons: function (vprommExists, id) {
     return (
-      <div>
-        <Link className='bttn bttn-s bttn-base-light' to={`/${getLanguage()}/analytics/road/${id}/`}>Map</Link>
-        <a className='bttn bttn-s bttn-base-light' href={`${api}/field/geometries/${id}?grouped=false&download=true`}>Download</a>
+      <div className='a-table-actions'>
+        <Link className='a-table-action' to={`/${getLanguage()}/analytics/road/${id}/`}>{t('Explore')}</Link>
+        <a className='a-table-action' href={`${api}/field/geometries/${id}?grouped=false&download=true`}>{t('Download')}</a>
       </div>
     );
   },

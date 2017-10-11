@@ -114,8 +114,14 @@
 
 // Tables
 
+.a-table-action {
+  @extend .bttn, .bttn-s, .bttn-base-light;
+  margin: 0 ($global-spacing / 4) 0 0;
+  min-width: 5rem;
+}
+
 .table-properties-head {
-  width: 16rem;
+  width: 20rem;
 }
 
 .table-properties-head,
