@@ -126,7 +126,7 @@ var AnalyticsAA = React.createClass({
   makeAdminAnalyticsContent: function () {
     const level = this.props.params.aaId.length === 3 ? 'province' : 'district';
     const id = getAdminId(this.props.crosswalk, this.props.params.aaId, level);
-    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo)
+    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo);
     const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
