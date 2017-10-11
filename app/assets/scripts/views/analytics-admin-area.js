@@ -16,6 +16,7 @@ import {
   fetchAdminVProMMsProps,
   removeAdminVProMMsProps,
   removeFieldVProMMsIdsCount,
+  removeVProMMsIdsCount,
   removeFieldRoads,
   removeAdminInfo,
   setCrossWalk,
@@ -37,7 +38,7 @@ var AnalyticsAA = React.createClass({
     _fetchAdminInfo: React.PropTypes.func,
     _removeAdminInfo: React.PropTypes.func,
     _removeAdminVProMMsProps: React.PropTypes.func,
-    _removeVProMMsCount: React.PropTypes.func,
+    _removeVProMMsIdsCount: React.PropTypes.func,
     _removeFieldVProMMsIdsCount: React.PropTypes.func,
     _removeFieldRoads: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
@@ -92,6 +93,7 @@ var AnalyticsAA = React.createClass({
     this.props._removeAdminInfo();
     this.props._removeFieldRoads();
     this.props._removeFieldVProMMsIdsCount();
+    this.props._removeVProMMsIdsCount();
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -107,19 +109,25 @@ var AnalyticsAA = React.createClass({
     if (!this.props.fieldFetched && nextProps.fieldFetched) {
       this.getNextRoads(nextProps);
     }
-    if (this.props.adminRoadProperties !== nextProps.adminRoadProperties) {
-      this.getAdminData(nextProps);
-    }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
       this.props._removeFieldVProMMsIdsCount();
+      this.props._removeVProMMsIdsCount();
       this.props._removeFieldRoads();
       return this.props._fetchAdminInfo(nextProps.params.aaId);
+    }
+    if (this.props.adminRoadProperties !== nextProps.adminRoadProperties) {
+      // adminInfo is needed for getting the relevant data;
+      if (nextProps.adminInfoFetched) { this.getAdminData(nextProps); }
     }
   },
 
   shouldComponentUpdate: function (nextProps) {
+    if (nextProps.location.action === 'PUSH') {
+      if (nextProps.params.aaId.length === 5) { return true; }
+      return false;
+    }
     // do not re-render component when location changes. wait until admin data fetched.
     if (this.props.location.pathname !== nextProps.location.pathname) { return false; }
     return true;
@@ -246,6 +254,7 @@ function dispatcher (dispatch) {
     _removeFieldRoads: () => dispatch(removeFieldRoads()),
     _removeFieldVProMMsIdsCount: () => dispatch(removeFieldVProMMsIdsCount()),
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
+    _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount()),
     _setCrossWalk: () => dispatch(setCrossWalk()),
     _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig)),
     _updatePagination: (paginationUpdates) => dispatch(updatePagination(paginationUpdates))
