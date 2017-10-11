@@ -1010,3 +1010,14 @@ export function setCrossWalk () {
     type: actions.SET_CROSSWALK
   };
 }
+
+// ////////////////////////////////////////////////////////////////
+//                           Language                            //
+// ////////////////////////////////////////////////////////////////
+
+export function setLanguage (lang) {
+  return {
+    type: actions.SET_LANGUAGE,
+    text: lang
+  };
+}

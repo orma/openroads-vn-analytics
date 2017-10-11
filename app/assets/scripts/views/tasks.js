@@ -10,6 +10,7 @@ import intersect from '@turf/line-intersect';
 import pointOnLine from '@turf/point-on-line';
 import point from 'turf-point';
 import { createModifyLineString } from '../utils/to-osm';
+import { t } from '../utils/i18n';
 
 import {
   fetchNextWayTask,
@@ -214,7 +215,7 @@ var Tasks = React.createClass({
     const message = taskError || 'Loading your first task...';
     return (
       <div className='placeholder__fullscreen'>
-        <h3 className='placeholder__message'>{message}</h3>
+        <h3 className='placeholder__message'>{t(message)}</h3>
       </div>
     );
   },
@@ -224,8 +225,8 @@ var Tasks = React.createClass({
     const { task } = this.props;
     const properties = task.features.find(c => hoverId === c.properties._id).properties;
     const displayList = Object.keys(properties).map(key => key.charAt(0) === '_' ? null : [
-      <dt key={`${key}-key`}><strong>{key}</strong></dt>,
-      <dd key={`${key}-value`}>{properties[key] || '--'}</dd>
+      <dt key={`${key}-key`}><strong>{t('key')}</strong></dt>,
+      <dd key={`${key}-value`}>{t(`${properties[key] || '--'}`)}</dd>
     ]).filter(Boolean);
     return (
       <aside className='properties__overlay'>
@@ -244,21 +245,21 @@ var Tasks = React.createClass({
         {mode ? null : (
           <div>
             <div className='form-group'>
-              <p>1. Select roads to work on.</p>
+              <p>{`1. ${t('Select roads to work on')}.`}</p>
               <div className='map__panel--selected'>
                 {this.renderSelectedIds()}
               </div>
             </div>
             <div className='form-group map__panel--form'>
-              <p>2. Choose an action to perform.</p>
-              <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length < 2})} type='button' onClick={this.onDedupe}>Remove Duplicates</button>
+              <p>{`2. ${t('Choose an action to perform')}.`}</p>
+              <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length < 2})} type='button' onClick={this.onDedupe}>{t('Remove Duplicates')}</button>
               <br />
-              <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length !== 1})} type='button' onClick={this.onJoin}>Create Intersection</button>
+              <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length !== 1})} type='button' onClick={this.onJoin}>{t('Create Intersection')}</button>
             </div>
             <div className='form-group map__panel--form'>
-              <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.markAsDone}>Finish task</button>
+              <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.markAsDone}>{t('Finish task')}</button>
               <br />
-              <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.next}>Skip task</button>
+              <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.next}>{t('Skip task')}</button>
             </div>
           </div>
         )}
@@ -290,11 +291,11 @@ var Tasks = React.createClass({
   renderDedupeMode: function () {
     return (
       <div className='form-group map__panel--form'>
-        <h2>Remove Duplicate Roads</h2>
-        <p>Click on a road to keep. The other roads here will be deleted.</p>
-        <button className={c('bttn bttn-m bttn-secondary', {disabled: !this.state.selectedIds.length})} type='button' onClick={this.commitDedupe}>Confirm</button>
+        <h2>{t('Remove Duplicate Roads')}</h2>
+        <p>{t('Click on a road to keep. The other roads here will be deleted.')}</p>
+        <button className={c('bttn bttn-m bttn-secondary', {disabled: !this.state.selectedIds.length})} type='button' onClick={this.commitDedupe}>{t('Confirm')}</button>
         <br />
-        <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.exitMode}>Cancel</button>
+        <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.exitMode}>{t('Cancel')}</button>
       </div>
     );
   },
@@ -304,9 +305,9 @@ var Tasks = React.createClass({
       <div className='form-group map__panel--form'>
         <h2>Create an Intersection</h2>
         <p>Click on a road to create an intersection with.</p>
-        <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length !== 2})} type='button' onClick={this.commitJoin}>Confirm</button>
+        <button className={c('bttn bttn-m bttn-secondary', {disabled: this.state.selectedIds.length !== 2})} type='button' onClick={this.commitJoin}>{t('Confirm')}</button>
         <br />
-        <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.exitMode}>Cancel</button>
+        <button className='bttn bttn-m bttn-secondary' type='button' onClick={this.exitMode}>{t('Cancel')}</button>
       </div>
     );
   },
@@ -377,18 +378,18 @@ var Tasks = React.createClass({
   renderSelectedIds: function () {
     const { selectedIds } = this.state;
     if (!selectedIds.length) {
-      return <p className='empty'>No roads selected yet. Click a road to select it.</p>;
+      return <p className='empty'>{t('No roads selected yet. Click a road to select it.')}</p>;
     }
     if (selectedIds.length === 1) {
-      return <p>1 road selected. Select at least another one.</p>;
+      return <p>{t('1 road selected. Select at least another one.')}</p>;
     }
-    return <p>{selectedIds.length} roads selected.</p>;
+    return <p>{`${selectedIds.length} ${t('roads')} ${t('selected')}.`}</p>;
   },
 
   renderInflight: function () {
     return (
       <div className='map-options map-panel'>
-        <h2>Performing action...</h2>
+        <h2>{t('Performing action...')}</h2>
       </div>
     );
   },
