@@ -61,14 +61,12 @@ var Paginator = React.createClass({
   },
 
   getNextRoads: function (limit, thisIndex) {
-    if (thisIndex !== this.props.pagination.currentIndex) {
-      const level = this.props.adminInfo.level;
-      const offset = thisIndex;
-      let ids = (level === 'province') ? [this.props.crosswalk[level][this.props.aaId].id] : (
+    const level = this.props.adminInfo.level;
+    const offset = thisIndex;
+    let ids = (level === 'province') ? [this.props.crosswalk[level][this.props.aaId].id] : (
         [this.props.crosswalk['province'][this.props.adminInfo.parent.id].id, this.props.crosswalk[level][this.props.aaId]]
-      );
-      this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
-    }
+    );
+    this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
   },
 
   render: function () {
