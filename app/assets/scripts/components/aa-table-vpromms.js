@@ -122,7 +122,6 @@ const AATable = React.createClass({
   },
 
   renderTableBody: function () {
-    console.log(this.props);
     const sorted = this.handleSort(this.props.data);
     return (
       <tbody>
