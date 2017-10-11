@@ -1058,7 +1058,10 @@ export function updateClickedPage (page) {
   return {
     type: actions.UPDATE_PAGINATION_CLICKED_PAGE,
     page: page
+  };
+}
 
+// ////////////////////////////////////////////////////////////////
 //                           Language                            //
 // ////////////////////////////////////////////////////////////////
 
