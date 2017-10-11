@@ -51,7 +51,7 @@ var AnalyticsAA = React.createClass({
     location: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
-    offset: React.PropTypes.number
+    pagination: React.PropTypes.object
   },
 
   renderAdminChildren: function (children) {
@@ -96,6 +96,9 @@ var AnalyticsAA = React.createClass({
       const paginationConfig = makePaginationConfig(nextProps.VProMMsCount[0].total_roads, 20);
       this.props._setPagination(paginationConfig);
     }
+    if (!this.props.fieldFetched && nextProps.fieldFetched) {
+      this.getNextRoads(nextProps);
+    }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props._removeAdminVProMMsProps();
       this.props._removeAdminInfo();
@@ -115,7 +118,6 @@ var AnalyticsAA = React.createClass({
       [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
     this.props._fetchVProMMsIdsCount(level, ids);
-    this.props._fetchAdminVProMMsProps(ids, level);
     this.props._fetchFieldRoads(ids, level);
   },
 
@@ -124,7 +126,7 @@ var AnalyticsAA = React.createClass({
     let ids = (level === 'province') ? [props.crosswalk[level][props.params.aaId].id] : (
       [props.crosswalk['province'][props.adminInfo.parent.id].id, props.crosswalk[level][props.params.aaId]]
     );
-    this.props._fetchAdminVProMMsProps(level, ids, props.offset);
+    this.props._fetchAdminVProMMsProps(ids, level, props.pagination.currentIndex, props.pagination.limit);
   },
 
   makeAdminAnalyticsContent: function () {
@@ -185,7 +187,7 @@ var AnalyticsAA = React.createClass({
           </div>
           <div>
             {adminContent.total ? <AATable data={adminRoadIds} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : ''}
-            {/* {<Paginator offset={this.props.offset} pages={this.props.pages}/>} */}
+            {/* {<Paginator pagination={this.props.pagination} />} */}
           </div>
         </div>
       </div>
