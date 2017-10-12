@@ -48,9 +48,6 @@
 @import "mixins";
 
 
-/* Third-party
-   ========================================================================== */
-
 /* Main
    ========================================================================== */
 
@@ -61,13 +58,25 @@
 @import "buttons";
 @import "overlays";
 @import "forms";
-@import "page-landing";
-@import "analytics";
-@import "explore";
-@import "map";
 @import "base";
+
+
+/* Pages
+   ========================================================================== */
+
+@import "pages/page-landing";
+@import "pages/analytics";
+@import "pages/explore";
+@import "pages/editor";
+
+
+/* Charts
+   ========================================================================== */
 
 @import "charts/piechart";
 
-/* Utilities */
+
+/* Misc
+   ========================================================================== */
+
 @import "utils";

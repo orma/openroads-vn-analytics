@@ -7,7 +7,7 @@ import _ from 'lodash';
 import classnames from 'classnames';
 import { api } from '../config';
 import { Link } from 'react-router';
-import { t, getLanguage } from '../utils/i18n';
+import { t, getLanguage, setLanguage } from '../utils/i18n';
 import { fetchVProMMsBbox, removeAdminInfo } from '../actions/action-creators';
 
 const displayHeader = [
@@ -32,7 +32,10 @@ const AATable = React.createClass({
     properties: React.PropTypes.object,
     propertiesData: React.PropTypes.array,
     propertiesFetched: React.PropTypes.bool,
-    fieldRoads: React.PropTypes.array
+    fieldRoads: React.PropTypes.array,
+    language: React.PropTypes.string,
+    adminRoadProperties: React.PropTypes.array,
+    adminRoadPropertiesFetched: React.PropTypes.bool
   },
 
   getInitialState: function () {
@@ -43,6 +46,10 @@ const AATable = React.createClass({
         expandedId: null
       }
     };
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.language !== nextProps.language) { setLanguage(nextProps.language); }
   },
 
   renderTableHead: function () {
@@ -95,9 +102,9 @@ const AATable = React.createClass({
 
   renderFieldMapButtons: function (vprommExists, id) {
     return (
-      <div>
-        <Link className='bttn bttn-s bttn-base-light' to={`/${getLanguage()}/analytics/road/${id}/`}>Map</Link>
-        <a className='bttn bttn-s bttn-base-light' href={`${api}/field/geometries/${id}?grouped=false&download=true`}>Download</a>
+      <div className='a-table-actions'>
+        <Link className='a-table-action' to={`/${getLanguage()}/analytics/road/${id}/`}>{t('Explore')}</Link>
+        <a className='a-table-action' href={`${api}/field/geometries/${id}?grouped=false&download=true`}>{t('Download')}</a>
       </div>
     );
   },
@@ -123,6 +130,8 @@ const AATable = React.createClass({
 
   renderTableBody: function () {
     const sorted = this.handleSort(this.props.data);
+    console.log(sorted.length)
+    console.log(this.props.adminRoadProperties.length)
     return (
       <tbody>
       {_.map(sorted, (vpromm, i) => {
@@ -136,8 +145,8 @@ const AATable = React.createClass({
           'table-properties--hidden': this.state.expandedId !== vpromm
         });
         const roadPropDropDown = [];
-        if (this.props.propertiesFetched) {
-          _.forEach(this.props.propertiesData[i].properties, (prop, key, j) => {
+        if (this.props.adminRoadPropertiesFetched) {
+          _.forEach(this.props.adminRoadProperties[i].properties, (prop, key, j) => {
             roadPropDropDown.push(<dt key={`${vpromm}-${key}-key`}>{key}</dt>);
             roadPropDropDown.push(<dd key={`${vpromm}-${key}-value`}>{prop}</dd>);
           });
@@ -176,7 +185,10 @@ const AATable = React.createClass({
 function selector (state) {
   return {
     properties: state.VProMMsidProperties.properties,
-    fieldIds: state.fieldVProMMsids.ids
+    fieldIds: state.fieldVProMMsids.ids,
+    language: state.language.current,
+    adminRoadProperties: state.VProMMsAdminProperties.data,
+    adminRoadPropertiesFetched: state.VProMMsAdminProperties.fetched
   };
 }
 

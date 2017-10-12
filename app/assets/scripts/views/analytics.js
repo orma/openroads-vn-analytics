@@ -1,7 +1,5 @@
 'use strict';
 import React from 'react';
-import { connect } from 'react-redux';
-import { setCrossWalk } from '../actions/action-creators';
 
 var Analytics = React.createClass({
   displayName: 'Analytics',
@@ -15,16 +13,12 @@ var Analytics = React.createClass({
     VProMMSids: React.PropTypes.object
   },
 
-  componentWillMount: function () {
-    this.props._setCrossWalk();
-  },
-
   render: function () {
     return (
       <section classNmae='page'>
         <div className='page__body aa'>
           <div className='aa-main'>
-            {React.cloneElement(this.props.children, {crosswalk: this.props.crosswalk, VProMMSids: this.props.VProMMSids})}
+            {this.props.children}
           </div>
         </div>
       </section>
@@ -32,16 +26,4 @@ var Analytics = React.createClass({
   }
 });
 
-function selector (state) {
-  return {
-    crosswalk: state.crosswalk
-  };
-}
-
-function dispatcher (dispatch) {
-  return {
-    _setCrossWalk: () => dispatch(setCrossWalk())
-  };
-}
-
-module.exports = connect(selector, dispatcher)(Analytics);
+module.exports = Analytics;

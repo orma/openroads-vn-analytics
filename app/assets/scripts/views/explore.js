@@ -10,7 +10,8 @@ import {
   selectExploreMapLayer,
   exploreMapShowNoVpromms,
   setGlobalZoom,
-  removeVProMMsBBox
+  removeVProMMsBBox,
+  setPreviousLocation
 } from '../actions/action-creators';
 import MapOptions from '../components/map-options';
 import MapLegend from '../components/map-legend';
@@ -21,6 +22,7 @@ var Explore = React.createClass({
   propTypes: {
     _removeVProMMsBBox: React.PropTypes.func,
     _setGlobalZoom: React.PropTypes.func,
+    _setPreviousLocation: React.PropTypes.func,
     layer: React.PropTypes.string,
     showNoVpromms: React.PropTypes.bool,
     dispatch: React.PropTypes.func,
@@ -28,7 +30,8 @@ var Explore = React.createClass({
     globY: React.PropTypes.number,
     globZ: React.PropTypes.number,
     adminBbox: React.PropTypes.array,
-    vprommsBbox: React.PropTypes.array
+    vprommsBbox: React.PropTypes.array,
+    location: React.PropTypes.object
   },
 
   componentDidMount: function () {
@@ -88,6 +91,7 @@ var Explore = React.createClass({
 
   componentWillUnmount: function () {
     this.props._setGlobalZoom(this.makeXYZ());
+    this.props._setPreviousLocation(this.props.location.pathname);
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -139,7 +143,8 @@ function selector (state) {
 function dispatcher (dispatch) {
   return {
     _removeVProMMsBBox: function () { dispatch(removeVProMMsBBox()); },
-    _setGlobalZoom: function (xyzObj) { dispatch(setGlobalZoom(xyzObj)); }
+    _setGlobalZoom: function (xyzObj) { dispatch(setGlobalZoom(xyzObj)); },
+    _setPreviousLocation: function (location) { dispatch(setPreviousLocation(location)); }
   };
 }
 

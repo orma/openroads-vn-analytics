@@ -473,7 +473,7 @@ const VProMMsidProperties = function (state = defaultVProMMsProperties, action) 
 const defaultVProMMsAdminProperties = {
   fetching: false,
   fetched: false,
-  json: []
+  data: []
 };
 
 const VProMMsAdminProperties = function (state = defaultVProMMsAdminProperties, action) {
@@ -812,6 +812,16 @@ const language = function (state = {current: 'en'}, action) {
   return state;
 };
 
+const previousLocation = function (state = {path: '/'}, action) {
+  switch (action.type) {
+    case actions.SET_PREVIOUS_LOCATION:
+      state = _.cloneDeep(state);
+      state.path = action.location;
+      break;
+  }
+  return state;
+};
+
 export default combineReducers({
   admin,
   admins,
@@ -847,5 +857,6 @@ export default combineReducers({
   language,
   fieldRoads,
   fieldVProMMsids,
-  pagination
+  pagination,
+  previousLocation
 });

@@ -22,7 +22,7 @@ var Paginator = React.createClass({
   makePaginator: function () {
     let pages = [];
     let nav = [];
-    let numPages = this.props.pagination.pages;
+    let numPages = this.props.pagination.pages - 1;
     const clickedPage = this.props.pagination.clickedPage;
     const currentPage = this.props.pagination.currentPage;
     const limit = this.props.pagination.limit;
@@ -46,7 +46,7 @@ var Paginator = React.createClass({
       // pages inside previous/next buttons; only update the table roads
       pages.push(
         <li key={`page-${thisPage}-index-${thisIndex}`}>
-          <button className={buttonClass} onClick={(e) => { this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
+          <button className={buttonClass} onClick={(e) => { console.log(thisIndex); this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
         </li>
       );
     }

@@ -24,6 +24,7 @@ import {
   removeCrosswalk,
   setCrossWalk,
   setPagination,
+  setPreviousLocation,
   updatePagination
 } from '../actions/action-creators';
 
@@ -50,6 +51,7 @@ var AnalyticsAA = React.createClass({
     _setCrossWalk: React.PropTypes.func,
     _setOffset: React.PropTypes.func,
     _setPagination: React.PropTypes.func,
+    _setPreviousLocation: React.PropTypes.func,
     _updatePagination: React.PropTypes.func,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
@@ -67,7 +69,8 @@ var AnalyticsAA = React.createClass({
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
     pagination: React.PropTypes.object,
-    history: React.PropTypes.object
+    history: React.PropTypes.object,
+    previousLocation: React.PropTypes.string
   },
 
   // before mount, get the admin info needed to make the list of child elements
@@ -80,17 +83,21 @@ var AnalyticsAA = React.createClass({
   // make the component to be the same each time
   componentWillUnmount: function () {
     this.clearAdminData();
+    this.props._removeCrosswalk();
+    this.props._setPreviousLocation(this.props.location.pathname);
   },
 
   // use the aaId to get the initial field data
   componentWillReceiveProps: function (nextProps) {
     if (!this.props.crosswalkSet && nextProps.crosswalkSet) { this.getAdminData(nextProps); }
-
     if (!this.props.VProMMsCountFetched && nextProps.VProMMsCountFetched) {
+      if (/explore/.test(nextProps.previousLocation) || /road/.test(nextProps.previousLocation)) { return; }
+      // when returning
       const paginationConfig = makePaginationConfig(nextProps.VProMMsCount[0].total_roads, 20);
       this.props._setPagination(paginationConfig);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
+      if (this.props.language !== nextProps.language) { return; }
       if (nextProps.location.action === 'POP') { this.clearAdminData(); }
       this.getAdminData(nextProps);
     }
@@ -107,20 +114,14 @@ var AnalyticsAA = React.createClass({
   getAdminData: function (props) {
     const level = props.params.aaId.length === 3 ? 'province' : 'district';
     const idTest = makeIdTest(props.crosswalk, props.adminInfo, props.params.aaId, level);
+    const index = (/explore/.test(props.previousLocation) || /road/.test(props.previousLocation)) ? props.pagination.currentIndex : 0;
+    console.log(index);
     this.props._fetchVProMMsIdsCount(level, idTest);
     this.props._fetchFieldRoads(idTest, level);
-    this.props._fetchAdminRoads(idTest, level, 20, 0);
-    this.props._fetchAdminVProMMsProps(idTest, level, 20, 0);
+    this.props._fetchAdminRoads(idTest, level, 20, index);
+    this.props._fetchAdminVProMMsProps(idTest, level, 20, index);
     this.props._fetchAdminInfo(props.params.aaId);
     this.props._removeAdminInfo();
-  },
-
-  getNextRoads: function (props) {
-    const level = props.adminInfo.level;
-    const limit = props.pagination.limit;
-    const offset = props.pagination.currentIndex;
-    const idTest = makeIdTest(props.crosswalk, props.adminInfo, props.params.aaId);
-    this.props._fetchAdminVProMMsProps(idTest, level, limit, offset);
   },
 
   makeAdminAnalyticsContent: function () {
@@ -155,6 +156,8 @@ var AnalyticsAA = React.createClass({
     }
     if (this.props.adminInfoFetched) {
       return (
+        <nav className='a-subnav'>
+        <h2>{t('Districts')}</h2>
         <ul className='a-children'>
           {children.map((child, i) => {
             var childKey = `${child}-${i}`;
@@ -164,9 +167,10 @@ var AnalyticsAA = React.createClass({
             );
           })}
         </ul>
+        </nav>
       );
     } else {
-      return (<div>Loading Child Admins</div>);
+      return (<div className='a-subnav'><h2 className='a-loading'>Loading Child Admins</h2></div>);
     }
   },
 
@@ -180,11 +184,11 @@ var AnalyticsAA = React.createClass({
   },
 
   renderAnalyticsAdmin: function () {
-    const adminContent = this.makeAdminAnalyticsContent();
     setLanguage(this.props.language);
+    const adminContent = this.makeAdminAnalyticsContent();
     return (
-      <div>
-        <div className='a-header'>
+      <section>
+        <header className='a-header'>
           <div className='a-headline'>
             <h1>{adminContent.name}</h1>
           </div>
@@ -192,7 +196,7 @@ var AnalyticsAA = React.createClass({
           <div className='a-head-actions'>
             { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' }
           </div>
-        </div>
+        </header>
         <div>
           {/* commune (district child) lists are not rendered */}
           { this.renderAdminChildren(this.props.adminInfo.children, adminContent) }
@@ -203,11 +207,11 @@ var AnalyticsAA = React.createClass({
             </div>
           </div>
           <div>
-            {(adminContent.total && this.props.adminRoadsFetched) ? <AATable data={this.props.adminRoads} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} propertiesFetched={this.props.adminRoadPropertiesFetched} /> : (<div>Loading Table</div>)}
+            {(adminContent.total && this.props.adminRoadsFetched) ? <AATable data={this.props.adminRoads} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : (<div className='a-subnav'><h2>Loading Table</h2></div>)}
             {((this.props.pagination.pages > 1) && this.props.adminRoadsFetched) ? <Paginator pagination={this.props.pagination} crosswalk={this.props.crosswalk} adminInfo={this.props.adminInfo} aaId={this.props.params.aaId} /> : <div/>}
           </div>
         </div>
-      </div>
+      </section>
     );
   },
 
@@ -236,7 +240,8 @@ function selector (state) {
     language: state.language.current,
     VProMMsCount: state.roadIdCount.counts,
     VProMMsCountFetched: state.roadIdCount.fetched,
-    pagination: state.pagination
+    pagination: state.pagination,
+    previousLocation: state.previousLocation.path
   };
 }
 
@@ -255,6 +260,7 @@ function dispatcher (dispatch) {
     _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
     _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount()),
     _setCrossWalk: () => dispatch(setCrossWalk()),
+    _setPreviousLocation: (location) => dispatch(setPreviousLocation(location)),
     _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig)),
     _updatePagination: (paginationUpdates) => dispatch(updatePagination(paginationUpdates))
   };

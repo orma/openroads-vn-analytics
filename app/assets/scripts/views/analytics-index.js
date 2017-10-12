@@ -108,7 +108,7 @@ var AnalyticsIndex = React.createClass({
           </div>
         </div>
         <div>
-          {this.props.provincesFetched ? <AATable data={this.makeProvinceData()} crosswalk={this.props.crosswalk} /> : (<div>Loading Tables</div>)}
+          {this.props.provincesFetched ? <AATable data={this.makeProvinceData()} crosswalk={this.props.crosswalk} /> : (<div className='a-subnav'><h2>Loading Tables</h2></div>)}
         </div>
       </div>
     );

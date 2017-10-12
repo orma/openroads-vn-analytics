@@ -1095,3 +1095,14 @@ export function setLanguage (lang) {
     text: lang
   };
 }
+
+// ////////////////////////////////////////////////////////////////
+//                           Location                            //
+// ////////////////////////////////////////////////////////////////
+
+export function setPreviousLocation (location) {
+  return {
+    type: actions.SET_PREVIOUS_LOCATION,
+    location: location
+  };
+};
