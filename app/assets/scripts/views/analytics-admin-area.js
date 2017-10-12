@@ -5,6 +5,7 @@ import { t, getLanguage, setLanguage } from '../utils/i18n';
 import { makePaginationConfig } from '../utils/pagination';
 import { makeIdTest, getAdminId, getAdminName } from '../utils/admin-level';
 import { Link } from 'react-router';
+import c from 'classnames';
 
 import Paginator from '../components/paginator';
 import AATable from '../components/aa-table-vpromms';
@@ -170,7 +171,7 @@ var AnalyticsAA = React.createClass({
     };
   },
 
-  renderAdminChildren: function (children, adminContent) {
+  renderAdminChildren: function (children, adminContent, level) {
     if (adminContent.level === 'district') {
       return (
         <div/>
@@ -178,6 +179,7 @@ var AnalyticsAA = React.createClass({
     }
     if (this.props.adminInfoFetched) {
       const aaId = this.props.params.aaId;
+      const childClasses = children.map(child => c({'disabled': this.props.crosswalk['district'][child.id] === ''}));
       return (
         <nav className='a-subnav'>
         <h2>{t('Districts')}</h2>
@@ -185,7 +187,7 @@ var AnalyticsAA = React.createClass({
           {children.map((child, i) => {
             var childKey = `${child}-${i}`;
             return (
-              <li key={childKey} ><Link onClick={(e) => { this.clearAdminData(); this.props._setCrossWalk(); this.props._setSubAdminName(child.name_en); }}to={`/${getLanguage()}/analytics/${aaId}/${child.id}`}>{child.name_en}</Link>
+              <li key={childKey} ><Link className={childClasses[i]} onClick={(e) => { this.clearAdminData(); this.props._setCrossWalk(); this.props._setSubAdminName(child.name_en); }}to={`/${getLanguage()}/analytics/${aaId}/${child.id}`}>{child.name_en}</Link>
             </li>
             );
           })}
