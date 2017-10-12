@@ -25,6 +25,7 @@ import {
   setCrossWalk,
   setPagination,
   setPreviousLocation,
+  setSubAdminName,
   updatePagination
 } from '../actions/action-creators';
 
@@ -52,6 +53,7 @@ var AnalyticsAA = React.createClass({
     _setOffset: React.PropTypes.func,
     _setPagination: React.PropTypes.func,
     _setPreviousLocation: React.PropTypes.func,
+    _setSubAdminName: React.PropTypes.func,
     _updatePagination: React.PropTypes.func,
     crosswalk: React.PropTypes.object,
     crosswalkSet: React.PropTypes.bool,
@@ -70,7 +72,8 @@ var AnalyticsAA = React.createClass({
     VProMMsCountFetched: React.PropTypes.bool,
     pagination: React.PropTypes.object,
     history: React.PropTypes.object,
-    previousLocation: React.PropTypes.string
+    previousLocation: React.PropTypes.string,
+    subadminName: React.PropTypes.string
   },
 
   // before mount, get the admin info needed to make the list of child elements
@@ -112,10 +115,11 @@ var AnalyticsAA = React.createClass({
   },
 
   getAdminData: function (props) {
-    const level = props.params.aaId.length === 3 ? 'province' : 'district';
-    const idTest = makeIdTest(props.crosswalk, props.adminInfo, props.params.aaId, level);
-    const index = (/explore/.test(props.previousLocation) || /road/.test(props.previousLocation)) ? props.pagination.currentIndex : 0;
-    console.log(index);
+    const level = !props.params.aaIdSub ? 'province' : 'district';
+    const ids = {aaId: props.params.aaId};
+    if (level === 'district') { ids['aaIdSub'] = props.params.aaIdSub; }
+    const idTest = makeIdTest(props.crosswalk, ids, level);
+    const index = (/explore/.test(props.previousLocation) || /road/.test(props.previousLocation)) ? ((props.pagination.clickedPage - 1) * props.pagination.limit) : 0;
     this.props._fetchVProMMsIdsCount(level, idTest);
     this.props._fetchFieldRoads(idTest, level);
     this.props._fetchAdminRoads(idTest, level, 20, index);
@@ -124,10 +128,17 @@ var AnalyticsAA = React.createClass({
     this.props._removeAdminInfo();
   },
 
+  makeAdminName: function () {
+    const level = !this.props.params.aaIdSub ? 'province' : 'district';
+    const idFinder = (level === 'province') ? { aaId: this.props.params.aaId } : { aaIdSub: this.props.params.aaIdSub };
+    return getAdminName(this.props.crosswalk, idFinder, level, this.props.adminInfo);
+  },
+
   makeAdminAnalyticsContent: function () {
-    const level = this.props.params.aaId.length === 3 ? 'province' : 'district';
-    const id = getAdminId(this.props.crosswalk, this.props.params.aaId, level);
-    const name = getAdminName(this.props.crosswalk, this.props.params.aaId, level, this.props.adminInfo);
+    const level = !this.props.params.aaIdSub ? 'province' : 'district';
+    const idFinder = (level === 'province') ? { aaId: this.props.params.aaId } : { aaIdSub: this.props.params.aaIdSub };
+    const id = getAdminId(this.props.crosswalk, idFinder, level);
+    // TOFIX: HAVE DISTRICT NAMES IN CROSSWALK
     const total = this.props.VProMMsCount.length > 0 ? this.props.VProMMsCount[0].total_roads : 0;
     const field = this.props.fieldRoads.length;
     const completion = (total !== 0) ? ((field / total) * 100) : 0;
@@ -155,6 +166,7 @@ var AnalyticsAA = React.createClass({
       );
     }
     if (this.props.adminInfoFetched) {
+      const aaId = this.props.params.aaId;
       return (
         <nav className='a-subnav'>
         <h2>{t('Districts')}</h2>
@@ -162,7 +174,7 @@ var AnalyticsAA = React.createClass({
           {children.map((child, i) => {
             var childKey = `${child}-${i}`;
             return (
-              <li key={childKey} ><Link onClick={(e) => { this.clearAdminData(); this.props._setCrossWalk(); }}to={`/${getLanguage()}/analytics/${child.id}`}>{child.name_en}</Link>
+              <li key={childKey} ><Link onClick={(e) => { this.clearAdminData(); this.props._setCrossWalk(); this.props._setSubAdminName(child.name_en); }}to={`/${getLanguage()}/analytics/${aaId}/${child.id}`}>{child.name_en}</Link>
             </li>
             );
           })}
@@ -190,7 +202,7 @@ var AnalyticsAA = React.createClass({
       <section>
         <header className='a-header'>
           <div className='a-headline'>
-            <h1>{adminContent.name}</h1>
+            <h1>{this.props.adminInfoFetched ? this.makeAdminName() : ''}</h1>
           </div>
           {/* completion suggests data exists, in whcih case there is data available for download */}
           <div className='a-head-actions'>
@@ -241,7 +253,8 @@ function selector (state) {
     VProMMsCount: state.roadIdCount.counts,
     VProMMsCountFetched: state.roadIdCount.fetched,
     pagination: state.pagination,
-    previousLocation: state.previousLocation.path
+    previousLocation: state.previousLocation.path,
+    subadminName: state.subadminName.name
   };
 }
 
@@ -262,6 +275,7 @@ function dispatcher (dispatch) {
     _setCrossWalk: () => dispatch(setCrossWalk()),
     _setPreviousLocation: (location) => dispatch(setPreviousLocation(location)),
     _setPagination: (paginationConfig) => dispatch(setPagination(paginationConfig)),
+    _setSubAdminName: (name) => dispatch(setSubAdminName(name)),
     _updatePagination: (paginationUpdates) => dispatch(updatePagination(paginationUpdates))
   };
 }

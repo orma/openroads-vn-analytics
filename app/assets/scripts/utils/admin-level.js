@@ -7,15 +7,15 @@
  * @param {number} aaId current admin id
  * @return {array} idTest
  */
-export function makeIdTest (crosswalk, adminInfo, aaId, level) {
+export function makeIdTest (crosswalk, ids, level) {
   let idTest = [];
   if (level === 'province') {
-    const adminId = crosswalk[level][aaId].id;
+    const adminId = crosswalk[level][ids.aaId].id;
     idTest.push(adminId);
   }
   if (level === 'district') {
-    const parentId = aaId.length === 5 ? crosswalk['province'][adminInfo.id].id : crosswalk['province'][adminInfo.parent.id].id;
-    const adminId = crosswalk[level][aaId];
+    const parentId = crosswalk['province'][ids.aaId].id;
+    const adminId = crosswalk[level][ids.aaIdSub];
     idTest.push(parentId);
     idTest.push(adminId);
   }
@@ -26,14 +26,13 @@ export function makeIdTest (crosswalk, adminInfo, aaId, level) {
  * given crosswalk, aaId, and admin level, returns its id
  * @param {object} crosswalk object to translate between admin boundaries and vpromms ids
  * @param {number} aaId current admin id
- * @param {string} level admin level, district or province
  * @return admin id
  */
-export function getAdminId (crosswalk, aaId, level) {
+export function getAdminId (crosswalk, idFinder, level) {
   if (level === 'province') {
-    return crosswalk[level][aaId].id;
+    return crosswalk[level][idFinder.aaId].id;
   } else {
-    return crosswalk[level][aaId];
+    return crosswalk[level][idFinder.aaIdSub];
   }
 }
 
@@ -42,13 +41,12 @@ export function getAdminId (crosswalk, aaId, level) {
  * @param {object} crosswalk object to translate between admin boundaries and vpromms ids
  * @param {number} aaId current admin id
  * @param {string} level admin level, district or province
- * @param {object} adminInfo object with current admin info
  * @return admin name
  */
-export function getAdminName (crosswalk, aaId, level, adminInfo) {
+export function getAdminName (crosswalk, idFinder, level, adminInfo) {
   if (level === 'province') {
-    return crosswalk[level][aaId].name;
+    return crosswalk[level][idFinder.aaId].name;
   } else {
-    return adminInfo.name_en;
+    return adminInfo.children.find(child => child.id === Number(idFinder.aaIdSub)).name_en;
   }
 }

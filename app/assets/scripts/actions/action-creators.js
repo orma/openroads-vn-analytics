@@ -1105,4 +1105,11 @@ export function setPreviousLocation (location) {
     type: actions.SET_PREVIOUS_LOCATION,
     location: location
   };
-};
+}
+
+export function setSubAdminName (name) {
+  return {
+    type: actions.SET_SUBADMIN_NAME,
+    name: name
+  };
+}

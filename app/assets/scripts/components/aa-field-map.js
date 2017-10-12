@@ -4,7 +4,7 @@ import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { flatten, uniq } from 'lodash';
 import { connect } from 'react-redux';
-import { fetchVProMMsidSourceGeoJSON } from '../actions/action-creators';
+import { fetchVProMMsidSourceGeoJSON, setPreviousLocation } from '../actions/action-creators';
 import config from '../config';
 import AAFieldMapLegend from './aa-field-map-legend';
 
@@ -33,8 +33,10 @@ var AAFieldMap = React.createClass({
     fetched: React.PropTypes.bool,
     params: React.PropTypes.object,
     vpromm: React.PropTypes.string,
+    location: React.PropTypes.object,
     _fetchVProMMsidSourceGeoJSON: React.PropTypes.func,
-    _removeVProMMsSourceGeoJSON: React.PropTypes.func
+    _removeVProMMsSourceGeoJSON: React.PropTypes.func,
+    _setPreviousLocation: React.PropTypes.func
   },
 
   generateLngLatZoom: function (featureCollection) {
@@ -90,6 +92,11 @@ var AAFieldMap = React.createClass({
     const vpromm = this.props.params.vpromm;
     this.props._fetchVProMMsidSourceGeoJSON(vpromm);
   },
+
+  componentWillUnmount: function () {
+    this.props._setPreviousLocation(this.props.location.pathname);
+  },
+
   // only once the GeoJSON is fetched, generate the map
   componentWillReceiveProps: function (nextProps) {
     if (nextProps.fetched) { this.generateMap(nextProps.geoJSON); }
@@ -136,7 +143,8 @@ function selector (state) {
 }
 function dispatcher (dispatch) {
   return {
-    _fetchVProMMsidSourceGeoJSON: (id) => dispatch(fetchVProMMsidSourceGeoJSON(id))
+    _fetchVProMMsidSourceGeoJSON: (id) => dispatch(fetchVProMMsidSourceGeoJSON(id)),
+    _setPreviousLocation: (location) => dispatch(setPreviousLocation(location))
   };
 }
 

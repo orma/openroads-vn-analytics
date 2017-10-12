@@ -10,7 +10,8 @@ import {
   removeVProMMsIdsCount,
   removeProvinces,
   removeCrosswalk,
-  setCrossWalk
+  setCrossWalk,
+  setPreviousLocation
 } from '../actions/action-creators';
 
 import AATable from '../components/aa-table-index';
@@ -26,6 +27,7 @@ var AnalyticsIndex = React.createClass({
     _removeCrosswalk: React.PropTypes.func,
     _removeProvinces: React.PropTypes.func,
     _setCrossWalk: React.PropTypes.func,
+    _setPreviousLocation: React.PropTypes.func,
     provincesFetched: React.PropTypes.bool,
     provinces: React.PropTypes.array,
     crosswalk: React.PropTypes.object,
@@ -34,7 +36,8 @@ var AnalyticsIndex = React.createClass({
     VProMMsCount: React.PropTypes.array,
     VProMMsCountFetched: React.PropTypes.bool,
     fieldIdCount: React.PropTypes.array,
-    fieldCountsFetched: React.PropTypes.bool
+    fieldCountsFetched: React.PropTypes.bool,
+    location: React.PropTypes.object
   },
 
   componentWillMount: function () {
@@ -48,6 +51,7 @@ var AnalyticsIndex = React.createClass({
     this.props._removeVProMMsIdsCount();
     this.props._removeCrosswalk();
     this.props._removeProvinces();
+    this.props._setPreviousLocation(this.props.location.pathname);
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -143,7 +147,8 @@ function dispatcher (dispatch) {
     _removeVProMMsIdsCount: () => dispatch(removeVProMMsIdsCount()),
     _removeCrosswalk: () => dispatch(removeCrosswalk()),
     _removeProvinces: () => dispatch(removeProvinces()),
-    _setCrossWalk: () => dispatch(setCrossWalk())
+    _setCrossWalk: () => dispatch(setCrossWalk()),
+    _setPreviousLocation: () => dispatch(setPreviousLocation())
   };
 }
 

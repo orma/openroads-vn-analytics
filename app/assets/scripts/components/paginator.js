@@ -2,7 +2,13 @@
 import React from 'react';
 import c from 'classnames';
 import { connect } from 'react-redux';
-import { updateClickedPage, updatePagination, fetchAdminRoads, fetchAdminVProMMsProps } from '../actions/action-creators';
+import {
+  updateClickedPage,
+  updatePagination,
+  fetchAdminRoads,
+  fetchAdminVProMMsProps,
+  removeAdminVProMMsProps
+} from '../actions/action-creators';
 
 var Paginator = React.createClass({
 
@@ -11,18 +17,22 @@ var Paginator = React.createClass({
   propTypes: {
     _fetchAdminRoads: React.PropTypes.func,
     _fetchAdminVProMMsProps: React.PropTypes.func,
+    _removeAdminVProMMsProps: React.PropTypes.func,
     _updateClickedPage: React.PropTypes.func,
     _updatePagination: React.PropTypes.func,
     aaId: React.PropTypes.string,
     adminInfo: React.PropTypes.object,
     crosswalk: React.PropTypes.object,
-    pagination: React.PropTypes.object
+    pagination: React.PropTypes.object,
+    VProMMsCount: React.PropTypes.array,
+    VProMMsCountFetched: React.PropTypes.bool
   },
 
   makePaginator: function () {
     let pages = [];
     let nav = [];
-    let numPages = this.props.pagination.pages - 1;
+    let numPages = this.props.pagination.pages;
+    const vprommsCount = this.props.VProMMsCount[0].total_roads;
     const clickedPage = this.props.pagination.clickedPage;
     const currentPage = this.props.pagination.currentPage;
     const limit = this.props.pagination.limit;
@@ -40,13 +50,16 @@ var Paginator = React.createClass({
       </li>
     );
     for (var i = currentPage - 1; i < lastPage; i++) {
+      let limit = this.props.pagination.limit;
       const thisPage = i + 1;
-      const thisIndex = limit * thisPage;
+      const thisIndex = limit * i;
+      const countIndexDiff = Math.abs(thisIndex - vprommsCount);
+      if (countIndexDiff < limit) { limit = countIndexDiff; }
       const buttonClass = c('bttn', 'bttn-base-light', {'active': (thisPage === clickedPage)});
       // pages inside previous/next buttons; only update the table roads
       pages.push(
         <li key={`page-${thisPage}-index-${thisIndex}`}>
-          <button className={buttonClass} onClick={(e) => { console.log(thisIndex); this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
+          <button className={buttonClass} onClick={(e) => { this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
         </li>
       );
     }
@@ -67,27 +80,37 @@ var Paginator = React.createClass({
     let ids = (level === 'province') ? [this.props.crosswalk[level][this.props.aaId].id] : (
         [this.props.crosswalk['province'][this.props.adminInfo.parent.id].id, this.props.crosswalk[level][this.props.aaId]]
     );
+    this.props._removeAdminVProMMsProps();
     this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
     this.props._fetchAdminRoads(ids, level, limit, offset);
   },
 
   render: function () {
-    const paginator = this.makePaginator();
-    return (
-      <div className='a-paginator'>
-        <ul className='a-children'>{paginator.pages}</ul>
-        <ul className='a-children a-paginator-nav'>{paginator.nav}</ul>
-      </div>
-    );
+    if (this.props.VProMMsCountFetched) {
+      const paginator = this.makePaginator();
+      return (
+        <div className='a-paginator'>
+          <ul className='a-children'>{paginator.pages}</ul>
+          <ul className='a-children a-paginator-nav'>{paginator.nav}</ul>
+        </div>
+      );
+    }
+    return (<div/>);
   }
 });
 
-function selector (state) { return {}; }
+function selector (state) {
+  return {
+    VProMMsCount: state.roadIdCount.counts,
+    VProMMsCountFetched: state.roadIdCount.fetched
+  };
+}
 
 function dispatcher (dispatch) {
   return {
     _fetchAdminVProMMsProps: (ids, level, limit, offset) => dispatch(fetchAdminVProMMsProps(ids, level, limit, offset)),
     _fetchAdminRoads: (ids, level, limit, offset) => dispatch(fetchAdminRoads(ids, level, limit, offset)),
+    _removeAdminVProMMsProps: () => dispatch(removeAdminVProMMsProps()),
     _updateClickedPage: (page) => dispatch(updateClickedPage(page)),
     _updatePagination: (index, page) => dispatch(updatePagination(index, page))
   };

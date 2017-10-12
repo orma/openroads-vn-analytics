@@ -129,9 +129,9 @@ const AATable = React.createClass({
   },
 
   renderTableBody: function () {
-    const sorted = this.handleSort(this.props.data);
-    console.log(sorted.length)
-    console.log(this.props.adminRoadProperties.length)
+    let sorted = this.props.data.slice(0, propsLength - 1);
+    const propsLength = this.props.adminRoadProperties.length;
+    sorted = this.handleSort(this.props.data);
     return (
       <tbody>
       {_.map(sorted, (vpromm, i) => {
@@ -146,7 +146,8 @@ const AATable = React.createClass({
         });
         const roadPropDropDown = [];
         if (this.props.adminRoadPropertiesFetched) {
-          _.forEach(this.props.adminRoadProperties[i].properties, (prop, key, j) => {
+          const adminProp = this.props.adminRoadProperties.find((prop) => prop.id === vpromm);
+          _.forEach(adminProp.properties, (prop, key, j) => {
             roadPropDropDown.push(<dt key={`${vpromm}-${key}-key`}>{key}</dt>);
             roadPropDropDown.push(<dd key={`${vpromm}-${key}-value`}>{prop}</dd>);
           });
