@@ -100,6 +100,17 @@ var AnalyticsAA = React.createClass({
       this.props._setPagination(paginationConfig);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
+      const sameLanguage = (this.props.params.lang === nextProps.params.lang);
+      const level = !this.props.params.aaIdSub ? 'province' : 'district';
+      const sameAdmin = level === 'province' ? (this.props.params.aaId === nextProps.params.aaId) : (this.props.params.aaIdSub === nextProps.params.aaIdSub);
+      // if back button is pressed right after the langauge was updated,
+      // go back to the parent admin, not the same admin w/different language per the default.
+      if (nextProps.location.action === 'POP') {
+        if (sameAdmin && !sameLanguage) {
+          const path = (level === 'district') ? `/${getLanguage()}/analytics/${this.props.params.aaId}` : `/${getLanguage()}/analytics/`;
+          this.props.history.push(path);
+        }
+      }
       if (this.props.language !== nextProps.language) { return; }
       if (nextProps.location.action === 'POP') { this.clearAdminData(); }
       this.getAdminData(nextProps);
