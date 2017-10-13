@@ -128,9 +128,20 @@ const AATable = React.createClass({
     this.setState({expandedId: newId});
   },
 
+  renderProperties: function (propBtnClass, propBtnLabel, propContainerClass, roadPropDropDown, vpromm) {
+    return (
+      <td className='table-properties-cell'>
+        <button type='button' className={propBtnClass} onClick={this.onPropertiesClick.bind(null, vpromm)}><span>{propBtnLabel}</span></button>
+        <div className={propContainerClass}>
+          <dl className='table-properties-list'>{roadPropDropDown}</dl>
+        </div>
+      </td>
+    );
+  },
+
   renderTableBody: function () {
-    let sorted = this.props.data.slice(0, propsLength - 1);
     const propsLength = this.props.adminRoadProperties.length;
+    let sorted = this.props.data.slice(0, propsLength - 1);
     sorted = this.handleSort(this.props.data);
     return (
       <tbody>
@@ -146,24 +157,26 @@ const AATable = React.createClass({
         });
         const roadPropDropDown = [];
         if (this.props.adminRoadPropertiesFetched) {
-          const adminProp = this.props.adminRoadProperties.find((prop) => prop.id === vpromm);
-          _.forEach(adminProp.properties, (prop, key, j) => {
-            roadPropDropDown.push(<dt key={`${vpromm}-${key}-key`}>{key}</dt>);
-            roadPropDropDown.push(<dd key={`${vpromm}-${key}-value`}>{prop}</dd>);
-          });
-        } else {
-          roadPropDropDown.push(<p>Data Loading</p>);
+          if (this.props.adminRoadProperties.length !== 0) {
+            const adminProp = this.props.adminRoadProperties.find((prop) => prop.id === vpromm);
+            if (adminProp) {
+              _.forEach(adminProp.properties, (prop, key, j) => {
+                roadPropDropDown.push(<dt key={`${vpromm}-${key}-${j}-key`}>{key}</dt>);
+                roadPropDropDown.push(<dd key={`${vpromm}-${key}-${j}-prop`}>{prop}</dd>);
+              });
+            } else {
+              roadPropDropDown.push(<dt key={`${vpromm}-key`}></dt>);
+              roadPropDropDown.push(<dd key={`${vpromm}-prop`}></dd>);
+            }
+          } else {
+            roadPropDropDown.push(<p>Data Loading</p>);
+          }
         }
         return (
           <tr key={vpromm} className={classnames({'alt': i % 2})}>
             <th>{ vprommFieldInDB ? this.renderVProMMsLink(vpromm) : vpromm }</th>
             <td className={classnames({'added': vprommFieldInDB, 'not-added': !vprommFieldInDB})}>{ vprommFieldInDB ? this.renderFieldMapButtons(vprommFieldInDB, vpromm) : ''}</td>
-            <td className='table-properties-cell'>
-              <button type='button' className={propBtnClass} onClick={this.onPropertiesClick.bind(null, vpromm)}><span>{propBtnLabel}</span></button>
-              <div className={propContainerClass}>
-                <dl className='table-properties-list'>{roadPropDropDown}</dl>
-              </div>
-            </td>
+            {this.props.adminRoadProperties.length !== 0 ? this.renderProperties(propBtnClass, propBtnLabel, propContainerClass, roadPropDropDown, vpromm) : <td></td>}
           </tr>
         );
       })}

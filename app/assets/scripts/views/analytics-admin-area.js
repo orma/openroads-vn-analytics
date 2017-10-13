@@ -97,7 +97,8 @@ var AnalyticsAA = React.createClass({
     if (!this.props.VProMMsCountFetched && nextProps.VProMMsCountFetched) {
       if (/explore/.test(nextProps.previousLocation) || /road/.test(nextProps.previousLocation)) { return; }
       // when returning
-      const paginationConfig = makePaginationConfig(nextProps.VProMMsCount[0].total_roads, 20);
+      const totalRoads = nextProps.VProMMsCount[0] ? nextProps.VProMMsCount[0].total_roads : 0;
+      const paginationConfig = makePaginationConfig(totalRoads, 20);
       this.props._setPagination(paginationConfig);
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
@@ -208,6 +209,16 @@ var AnalyticsAA = React.createClass({
     );
   },
 
+  renderTable: function (adminContent) {
+    if (adminContent.total && this.props.adminRoadProperties) {
+      return (<AATable data={this.props.adminRoads} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} />);
+    } else if (this.props.VProMMsCount[0]) {
+      return (<div className='a-subnav'><h2>Loading Table</h2></div>);
+    } else {
+      return (<div/>);
+    }
+  },
+
   renderAnalyticsAdmin: function () {
     setLanguage(this.props.language);
     const adminContent = this.makeAdminAnalyticsContent();
@@ -232,7 +243,7 @@ var AnalyticsAA = React.createClass({
             </div>
           </div>
           <div>
-            {(adminContent.total && this.props.adminRoadsFetched) ? <AATable data={this.props.adminRoads} fieldRoads={this.props.fieldRoads} propertiesData={this.props.adminRoadProperties} /> : (<div className='a-subnav'><h2>Loading Table</h2></div>)}
+            { this.renderTable(adminContent) }
             {((this.props.pagination.pages > 1) && this.props.adminRoadsFetched) ? <Paginator pagination={this.props.pagination} crosswalk={this.props.crosswalk} adminInfo={this.props.adminInfo} aaId={this.props.params.aaId} /> : <div/>}
           </div>
         </div>
