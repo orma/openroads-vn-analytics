@@ -244,7 +244,7 @@ var AnalyticsAA = React.createClass({
           </div>
           <div>
             { this.renderTable(adminContent) }
-            {((this.props.pagination.pages > 1) && this.props.adminRoadsFetched) ? <Paginator pagination={this.props.pagination} crosswalk={this.props.crosswalk} adminInfo={this.props.adminInfo} aaId={this.props.params.aaId} /> : <div/>}
+            {((this.props.pagination.pages > 1) && this.props.adminRoadsFetched) ? <Paginator pagination={this.props.pagination} crosswalk={this.props.crosswalk} adminInfo={this.props.adminInfo} params={this.props.params} /> : <div/>}
           </div>
         </div>
       </section>

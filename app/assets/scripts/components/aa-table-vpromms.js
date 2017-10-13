@@ -142,7 +142,6 @@ const AATable = React.createClass({
   renderTableBody: function () {
     const propsLength = this.props.adminRoadProperties.length;
     let sorted = this.props.data.slice(0, propsLength - 1);
-    sorted = this.handleSort(this.props.data);
     return (
       <tbody>
       {_.map(sorted, (vpromm, i) => {

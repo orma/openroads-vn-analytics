@@ -10,6 +10,8 @@ import {
   removeAdminVProMMsProps
 } from '../actions/action-creators';
 
+import { makeIdTest } from '../utils/admin-level';
+
 var Paginator = React.createClass({
 
   displayName: 'Paginator',
@@ -25,7 +27,8 @@ var Paginator = React.createClass({
     crosswalk: React.PropTypes.object,
     pagination: React.PropTypes.object,
     VProMMsCount: React.PropTypes.array,
-    VProMMsCountFetched: React.PropTypes.bool
+    VProMMsCountFetched: React.PropTypes.bool,
+    params: React.PropTypes.object
   },
 
   makePaginator: function () {
@@ -59,7 +62,7 @@ var Paginator = React.createClass({
       // pages inside previous/next buttons; only update the table roads
       pages.push(
         <li key={`page-${thisPage}-index-${thisIndex}`}>
-          <button className={buttonClass} onClick={(e) => { this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } }>{thisPage}</button>
+          <button className={buttonClass} onClick={(e) => { if (thisPage !== clickedPage) { this.props._updateClickedPage(thisPage); this.getNextRoads(limit, thisIndex); } } }>{thisPage}</button>
         </li>
       );
     }
@@ -75,14 +78,14 @@ var Paginator = React.createClass({
   },
 
   getNextRoads: function (limit, thisIndex) {
-    const level = this.props.adminInfo.level;
+    const level = !this.props.params.aaIdSub ? 'province' : 'district';
+    const ids = {aaId: this.props.params.aaId};
+    if (level === 'district') { ids['aaIdSub'] = this.props.params.aaIdSub; }
+    const idTest = makeIdTest(this.props.crosswalk, ids, level);
     const offset = thisIndex;
-    let ids = (level === 'province') ? [this.props.crosswalk[level][this.props.aaId].id] : (
-        [this.props.crosswalk['province'][this.props.adminInfo.parent.id].id, this.props.crosswalk[level][this.props.aaId]]
-    );
     this.props._removeAdminVProMMsProps();
-    this.props._fetchAdminVProMMsProps(ids, level, limit, offset);
-    this.props._fetchAdminRoads(ids, level, limit, offset);
+    this.props._fetchAdminVProMMsProps(idTest, level, limit, offset);
+    this.props._fetchAdminRoads(idTest, level, limit, offset);
   },
 
   render: function () {
