@@ -180,6 +180,9 @@ var AnalyticsAA = React.createClass({
     }
     if (this.props.adminInfoFetched) {
       const aaId = this.props.params.aaId;
+      // ignore any children not in the crosswalk.
+      children = children.filter(child => this.props.crosswalk['district'][child.id] !== undefined);
+      // disable child buttons if crosswalk value !== vpromms district id.
       const childClasses = children.map(child => c({'disabled': this.props.crosswalk['district'][child.id] === ''}));
       return (
         <nav className='a-subnav'>
@@ -200,11 +203,11 @@ var AnalyticsAA = React.createClass({
     }
   },
 
-  renderDataDumpLinks: function (provinceId) {
+  renderDataDumpLinks: function (adminName) {
     return (
       <div>
         <h3 classNam='a-header'>{t('Admin Chilren')}</h3>
-        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${provinceId}.csv`}>{t('Download Roads')}</a>
+        <a className='bttn bttn-secondary' href={`${config.provinceDumpBaseUrl}${adminName}.csv`}>{t('Download Roads')}</a>
       </div>
     );
   },
@@ -230,7 +233,8 @@ var AnalyticsAA = React.createClass({
           </div>
           {/* completion suggests data exists, in whcih case there is data available for download */}
           <div className='a-head-actions'>
-            { adminContent.completion ? this.renderDataDumpLinks(adminContent.id) : '' }
+            {/* TODO, remove aaIdSub when sub admin dumps are made. */}
+            { adminContent.completion && !this.props.params.aaIdSub ? this.renderDataDumpLinks(this.makeAdminName()) : '' }
           </div>
         </header>
         <div>
