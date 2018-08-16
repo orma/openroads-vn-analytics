@@ -4,6 +4,7 @@ import { localReducer } from 'redux-fractal';
 import _ from 'lodash';
 import * as actions from '../actions/action-types';
 import waytasks from './modules/tasks';
+import jobs from './modules/jobs';
 import osmChange from './modules/osm';
 import roads from './modules/roads';
 import roadCount from './modules/roadCount';
@@ -183,6 +184,7 @@ export default combineReducers({
   admins,
   adminInfo,
   roads,
+  jobs,
   roadCount,
   map,
   waytasks,
