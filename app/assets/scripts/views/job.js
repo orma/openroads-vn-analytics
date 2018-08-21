@@ -19,11 +19,17 @@ var Job = React.createClass({
       job: null
     };
   },
+  componentWillReceiveProps(nextProps) {
+    if (this.props.job !== nextProps.job) {
+      this.setState({
+        job: nextProps.job,
+      });
+    }
+  },
   render: function () {
     const { params } = this.props;
     const { job } = this.state;
     const id = params.id;
-    console.log('job state', this.state);
     return (
       <div className='inpage__body'>
         <div className='inner'>
