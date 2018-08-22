@@ -14,6 +14,7 @@ import { local } from 'redux-fractal';
 import { createStore, combineReducers } from 'redux';
 import { Link, withRouter } from 'react-router';
 import bbox from '@turf/bbox';
+import center from '@turf/center';
 import mapboxgl from 'mapbox-gl';
 import c from 'classnames';
 import T, {
@@ -238,13 +239,18 @@ class AssetsDetail extends React.Component {
   }
 
   render () {
-    const { vpromm, language, roadProps } = this.props;
-
+    const { vpromm, language, roadProps, roadGeo } = this.props;
     const disId = get(roadProps, 'data.district.id', null);
     const disName = get(roadProps, 'data.district.name', null);
     const provId = get(roadProps, 'data.province.id', null);
     const provName = get(roadProps, 'data.province.name', null);
     const hasGeometry = this.hasGeometry();
+
+    let featCenter = [0, 0];
+    if (roadGeo.fetched) {
+      console.log(roadGeo.data);
+      featCenter = center(roadGeo.data).geometry.coordinates;
+    }
 
     return (
       <div className='incontainer'>
@@ -273,13 +279,7 @@ class AssetsDetail extends React.Component {
               alignment='right' >
               <ul className='drop__menu drop__menu--iconified edit-menu'>
                 <li><a href='#' className='drop__menu-item em-attributes' onClick={this.onEditProperties}>Attributes</a></li>
-                {/*
-                  We're including the way id in the url just to show it, as it
-                  isn't doing anything. The way id for the editor is being
-                  stored by the reducer in redux/modules/map.js once the road
-                  properties are loaded.
-                */}
-                <li><Link to={`/${language}/editor?way=w${roadProps.data.way_id}`} className={c('drop__menu-item em-geometry', {disabled: !hasGeometry})} disabled={!hasGeometry}>Geometry</Link></li>
+                <li><Link to={`/${language}/editor?center=${featCenter.join('/')}`} className={c('drop__menu-item em-geometry', {disabled: !hasGeometry})} disabled={!hasGeometry}>Geometry</Link></li>
               </ul>
               <ul className='drop__menu drop__menu--iconified'>
                 <li><a href='#' className='drop__menu-item em-delete' onClick={this.onEditDelete}>Delete</a></li>

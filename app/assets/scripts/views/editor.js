@@ -1,26 +1,19 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import {
   compose,
   getContext
 } from 'recompose';
 import MapSearch from '../components/map-search';
 import T from '../components/t';
-import {
-  setMapPosition
-} from '../redux/modules/map';
 import config from '../config';
+
+import ORFrameNotifier from '../../../OR_frame_notifier';
 
 var Editor = React.createClass({
   displayName: 'Editor',
 
   propTypes: {
-    setMapPosition: React.PropTypes.func,
-    lng: React.PropTypes.number,
-    lat: React.PropTypes.number,
-    zoom: React.PropTypes.number,
-    language: React.PropTypes.string.isRequired,
-    way: React.PropTypes.string
+    language: React.PropTypes.string.isRequired
   },
 
   // /////////////////////////////////////////////////////////////////////////////
@@ -48,6 +41,7 @@ var Editor = React.createClass({
   // /   is sent to the iframe alongside the proper prefix.
   // /
   messageListener: function (e) {
+    // TODO: This is not working with the new version od ORFrameNotifier
     if (e.data.type === 'urlchange') {
       switch (e.data.id) {
         case 'or-editor':
@@ -67,29 +61,29 @@ var Editor = React.createClass({
   },
 
   componentDidMount: function () {
-    this.hash = '';
-    window.addEventListener('message', this.messageListener, false);
-  },
+    this.orFrame = new ORFrameNotifier('orma-vn', this.refs.editor.contentWindow);
 
-  componentWillReceiveProps: function ({ lng, lat, zoom, way }) {
-    this.props.setMapPosition(lng, lat, zoom, way);
+    this.orFrame.on('loaded', () => {
+      const mapPositionHash = /center=([0-9.]+\/[0-9.]+)&?/.exec(this.props.location.search);
+      let mapCenter = [108.239, 15.930];
+      let zoom = 6;
+      if (mapPositionHash && mapPositionHash[1] && mapPositionHash[1].split('/').length === 2) {
+        mapCenter = mapPositionHash[1].split('/');
+        zoom = 14.5;
+      }
+
+      this.orFrame.send('settings', {
+        center: mapCenter,
+        zoom
+      });
+    });
   },
 
   componentWillUnmount: function () {
-    window.removeEventListener('message', this.messageListener, false);
-
-    const mapPositionHash = /[0-9.]+\/[0-9.]+\/[0-9.]+$/.exec(this.hash);
-    if (mapPositionHash && mapPositionHash[0] && mapPositionHash[0].split('/').length === 3) {
-      const [zoom, lng, lat] = mapPositionHash[0]
-        .split('/')
-        .map(Number);
-      this.props.setMapPosition(lng, lat, zoom);
-    }
+    this.orFrame.destroy();
   },
 
   render: function () {
-    const { lng, lat, way } = this.props;
-    const zoom = way ? 16 : this.props.zoom;
     return (
       <section className='inpage inpage--alt'>
         <header className='inpage__header'>
@@ -107,10 +101,10 @@ var Editor = React.createClass({
             <figure className='map'>
               <iframe
                 className='map__media'
-                src={`${config.editorUrl}/#id=${way}&map=${zoom}/${lng}/${lat}`}
+                src={`${config.editorUrl}`}
                 id='main-frame'
                 name='main-frame'
-                ref="iframe"
+                ref="editor"
               />
             </figure>
           </div>
@@ -122,16 +116,5 @@ var Editor = React.createClass({
 
 
 module.exports = compose(
-  getContext({ language: React.PropTypes.string }),
-  connect(
-    state => ({
-      lng: state.map.lng || 108.239,
-      lat: state.map.lat || 15.930,
-      zoom: state.map.zoom || 6,
-      way: state.map.waySlug
-    }),
-    dispatch => ({
-      setMapPosition: (lng, lat, zoom, way) => dispatch(setMapPosition(lng, lat, zoom, way))
-    })
-  )
+  getContext({ language: React.PropTypes.string })
 )(Editor);
