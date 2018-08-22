@@ -18,6 +18,7 @@ import AssetsAA from './views/assets-admin-area';
 import AssetsDetail from './views/assets-detail';
 import Upload from './views/upload';
 import Faq from './views/faq';
+import Job  from './views/job';
 
 
 const validateLanguage = ({ params: { lang } }, replace) => {
@@ -37,6 +38,7 @@ render((
         <Route path='editor/*' component={Editor} pageClass='editor' />
         <Route path='explore' component={Explore} pageClass='explore' />
         <Route path='faq' component={Faq} pageClass='faq' />
+        <Route path='jobs/:id' component={Job} pageClass='job' />
         <Route path='assets' component={Assets}>
           <IndexRoute component={AssetsIndex} pageClass='assets' />
           <Route path='road/:vpromm' component={AssetsDetail} pageClass='assets-inner-canvas' />
